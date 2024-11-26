@@ -1,13 +1,13 @@
 
 from classes.company import Company
 from classes.flight import Flight
-from classes.city import City
+from classes.airport import Airport
 
 def main():
     company = Company("Aerolineas Argentina")
-    company.flights.append(Flight(City.RCU, City.EZE, 2))
+    company.flights.append(Flight(Airport.RCU, Airport.EZE, 2))
 
-    flight_id = company.get_flight(City.RCU, City.EZE)
+    flight_id = company.get_flight(Airport.RCU, Airport.EZE)
     print("Flight_id ", flight_id)
     seats_number = company.get_free_seats(flight_id)
     print("Seats ", seats_number)
