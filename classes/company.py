@@ -40,3 +40,20 @@ class Company:
         flight = self.get_flight_by_id(service_id)
         if not flight.is_free(seat_number):
             flight.free_seat(seat_number)
+
+    def find_all_paths(self, start, end):
+        stack = [(start, [start])]
+        paths = []
+
+        while stack:
+            current, path = stack.pop()
+
+            if current == end:
+                paths.append(path)
+                continue
+
+            for flight in [f for f in self.flights if f.source == current]:
+                if flight.dest not in path:
+                    stack.append((flight.dest, path + [flight.dest]))
+
+        return paths
