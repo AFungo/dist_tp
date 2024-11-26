@@ -21,20 +21,22 @@ class Company:
         if flight != None:
             free_seats = []
             for i in range(len(flight.seats)):
-                if flight.is_free_seat(i):
+                if flight.is_free(i):
                     free_seats.append(i)
             return free_seats
         return None
     
     def reserve(self, service_id, seat_number):
         flight = self.get_flight_by_id(service_id)
-        if flight.is_free_seat(seat_number):
-            flight.take_seat(seat_number)
+        if flight.is_free(seat_number):
+            flight.temporary_reserve_seat(seat_number)
 
     def confirm_reserve(self, service_id, seat_number):
-        return 0
+        flight = self.get_flight_by_id(service_id)
+        if flight.is_temporary_reserved(seat_number):
+            flight.reserve_seat(seat_number)
 
     def cancel_reserve(self, service_id, seat_number):
         flight = self.get_flight_by_id(service_id)
-        if not flight.is_free_seat(seat_number):
-            flight.drop_seat(seat_number)
+        if not flight.is_free(seat_number):
+            flight.free_seat(seat_number)
