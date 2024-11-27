@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+// The greeting service definition.
+service TicketPurchase {
+  // Sends a greeting
+  rpc GetFreeSeats (FreeSeatRequest) returns (FreeSeatReply){}
+  // rpc reserve (Request) returns (serviceId, seat_number){}
+  // rpc confirm_reserve (Request) returns (serviceId, seat_number){}
+  // rpc cancel_reserve (Request) returns (serviceId, seat_number){}
+  
+}
+
+// The request message containing the user's name.
+message FreeSeatRequest {
+}
+
+// The response message containing the greetings
+message FreeSeatReply {
+  string message = 1;
+}
