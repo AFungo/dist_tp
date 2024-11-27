@@ -57,3 +57,6 @@ class Company:
                     stack.append((flight.dest, path + [flight.dest]))
 
         return paths
+    
+    def add_flight(self, flight):
+        self.flights.append(flight)
