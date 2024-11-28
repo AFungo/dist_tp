@@ -1,0 +1,16 @@
+{
+    "name": "Splinter",
+    "flights": [
+        {
+            "src": "RCU",
+            "dest": "EZE",  
+            "seats_available": 2
+        },
+        {
+            "src": "EZE",
+            "dest": "AEP",
+            "seats_available": 2
+        }
+    ],
+    "port": 5000
+}
