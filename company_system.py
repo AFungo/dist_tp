@@ -3,11 +3,10 @@ import json
 from argparse import ArgumentParser
 from classes.company import Company
 from classes.flight import Flight
+from networking.company_server import CompanyServer
     
 
 def create(filename):
-    from networking.company_server import CompanyServer
-    
     filename = "resources/" + filename
     with open(filename, 'r') as f:
         data = json.load(f)
@@ -16,7 +15,7 @@ def create(filename):
     for f in data["flights"]:   
         flights.append(Flight(f["src"], f["dest"], f["seats_available"])) #Se va a romper acá
         
-    company = Company(f["name"], flights)
+    company = Company(data["name"], flights)
     company_server = CompanyServer(company, data["port"])
     return company, company_server
 
@@ -30,8 +29,4 @@ def main():
     
 
 if __name__ == "__main__":
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parent.parent))
     main()    
