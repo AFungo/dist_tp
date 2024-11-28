@@ -1,8 +1,8 @@
 class Company:
     
-    def __init__(self, name):
+    def __init__(self, name, flights=[]):
         self.name = name
-        self.flights = []
+        self.flights = flights
 
     def get_flight(self, source, dest):
         for flight in self.flights:
