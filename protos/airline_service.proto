@@ -1,13 +1,13 @@
 syntax = "proto3";
 
 // The greeting service definition.
-service TicketPurchase {
-  // Sends a greeting
+service AirlineService {
+  
   rpc GetFreeSeats (FreeSeatRequest) returns (FreeSeatReply){}
   // rpc reserve (Request) returns (serviceId, seat_number){}
   // rpc confirm_reserve (Request) returns (serviceId, seat_number){}
   // rpc cancel_reserve (Request) returns (serviceId, seat_number){}
-  
+  //rpc GetAllFlights () returns (Response){}
 }
 
 // The request message containing the user's name.

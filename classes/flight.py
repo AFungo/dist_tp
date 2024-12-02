@@ -1,6 +1,5 @@
 from enum import Enum
 
-global_id = 0
 class SeatStatus(Enum):
     FREE = 1
     TEMPORARY_RESERVED = 2
@@ -8,10 +7,8 @@ class SeatStatus(Enum):
 SeatStatus = Enum('SeatStatus', [('FREE', 1), ('TEMPORARY_RESERVED', 2), ('RESERVED', 3)])
 
 class Flight:
-    def __init__(self, source, dest, seats_amount):
-        global global_id
-        self.id = global_id
-        global_id += 1
+    def __init__(self, id, source, dest, seats_amount):
+        self.id = id
         self.source = source
         self.dest = dest
         self.seats = [SeatStatus.FREE] * seats_amount

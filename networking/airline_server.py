@@ -5,26 +5,26 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import grpc
-from networking.ticket_purchase_pb2 import FreeSeatReply
-from networking.ticket_purchase_pb2_grpc import TicketPurchaseServicer, add_TicketPurchaseServicer_to_server
+from networking.airline_service_pb2 import FreeSeatReply
+from networking.airline_service_pb2_grpc import AirlineServiceServicer, add_AirlineServiceServicer_to_server
 from concurrent import futures
 
-class TicketPurchase(TicketPurchaseServicer):
+class AirlineService(AirlineServiceServicer):
     def __init__(self, company):
         self.company = company
 
     def GetFreeSeats(self, request, context):
-        return FreeSeatReply(message=str(self.company.get_free_seats(0)))
+        return FreeSeatReply(message=str(self.company.get_free_seats(1)))
 
 
-class CompanyServer:
+class AirlineServer:
     def __init__(self, company, port):
         self.company = company
         self.port = port
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     def start(self):
-        add_TicketPurchaseServicer_to_server(TicketPurchase(self.company), self.server)
+        add_AirlineServiceServicer_to_server(AirlineService(self.company), self.server)
         self.server.add_insecure_port("[::]:" + self.port)
         self.server.start()
         print("Server started, listening on " + self.port)

@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import ticket_purchase_pb2 as ticket__purchase__pb2
+import airline_service_pb2 as airline__service__pb2
 
 GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
@@ -18,14 +18,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in ticket_purchase_pb2_grpc.py depends on'
+        + f' but the generated code in airline_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class TicketPurchaseStub(object):
+class AirlineServiceStub(object):
     """The greeting service definition.
     """
 
@@ -36,40 +36,39 @@ class TicketPurchaseStub(object):
             channel: A grpc.Channel.
         """
         self.GetFreeSeats = channel.unary_unary(
-                '/TicketPurchase/GetFreeSeats',
-                request_serializer=ticket__purchase__pb2.FreeSeatRequest.SerializeToString,
-                response_deserializer=ticket__purchase__pb2.FreeSeatReply.FromString,
+                '/AirlineService/GetFreeSeats',
+                request_serializer=airline__service__pb2.FreeSeatRequest.SerializeToString,
+                response_deserializer=airline__service__pb2.FreeSeatReply.FromString,
                 _registered_method=True)
 
 
-class TicketPurchaseServicer(object):
+class AirlineServiceServicer(object):
     """The greeting service definition.
     """
 
     def GetFreeSeats(self, request, context):
-        """Sends a greeting
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_TicketPurchaseServicer_to_server(servicer, server):
+def add_AirlineServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetFreeSeats': grpc.unary_unary_rpc_method_handler(
                     servicer.GetFreeSeats,
-                    request_deserializer=ticket__purchase__pb2.FreeSeatRequest.FromString,
-                    response_serializer=ticket__purchase__pb2.FreeSeatReply.SerializeToString,
+                    request_deserializer=airline__service__pb2.FreeSeatRequest.FromString,
+                    response_serializer=airline__service__pb2.FreeSeatReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'TicketPurchase', rpc_method_handlers)
+            'AirlineService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('TicketPurchase', rpc_method_handlers)
+    server.add_registered_method_handlers('AirlineService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class TicketPurchase(object):
+class AirlineService(object):
     """The greeting service definition.
     """
 
@@ -87,9 +86,9 @@ class TicketPurchase(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/TicketPurchase/GetFreeSeats',
-            ticket__purchase__pb2.FreeSeatRequest.SerializeToString,
-            ticket__purchase__pb2.FreeSeatReply.FromString,
+            '/AirlineService/GetFreeSeats',
+            airline__service__pb2.FreeSeatRequest.SerializeToString,
+            airline__service__pb2.FreeSeatReply.FromString,
             options,
             channel_credentials,
             insecure,

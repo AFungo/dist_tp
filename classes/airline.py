@@ -1,4 +1,4 @@
-class Company:
+class Airline:
     
     def __init__(self, name, flights=[]):
         self.name = name
