@@ -24,17 +24,37 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15\x61irline_service.proto\"\x11\n\x0f\x46reeSeatRequest\" \n\rFreeSeatReply\x12\x0f\n\x07message\x18\x01 \x01(\t2D\n\x0e\x41irlineService\x12\x32\n\x0cGetFreeSeats\x12\x10.FreeSeatRequest\x1a\x0e.FreeSeatReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15\x61irline_service.proto\"\x13\n\x11\x41llFlightsRequest\"&\n\x0f\x41llFlightsReply\x12\x13\n\x0b\x61ll_flights\x18\x01 \x01(\t\"$\n\x0f\x46reeSeatRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\" \n\rFreeSeatReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"8\n\x0eReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x13\n\x0bseat_number\x18\x02 \x01(\x05\"\x0e\n\x0cReserveReply\"?\n\x15\x43onfirmReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x13\n\x0bseat_number\x18\x02 \x01(\x05\"\x15\n\x13\x43onfirmReserveReply\">\n\x14\x43\x61ncelReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x13\n\x0bseat_number\x18\x02 \x01(\x05\"\x14\n\x12\x43\x61ncelReserveReply\"$\n\x0f\x41llSeatsRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\" \n\rAllSeatsReply\x12\x0f\n\x07message\x18\x01 \x01(\t2\xde\x02\n\x0e\x41irlineService\x12\x37\n\rGetAllFlights\x12\x12.AllFlightsRequest\x1a\x10.AllFlightsReply\"\x00\x12\x32\n\x0cGetFreeSeats\x12\x10.FreeSeatRequest\x1a\x0e.FreeSeatReply\"\x00\x12+\n\x07Reserve\x12\x0f.ReserveRequest\x1a\r.ReserveReply\"\x00\x12@\n\x0e\x43onfirmReserve\x12\x16.ConfirmReserveRequest\x1a\x14.ConfirmReserveReply\"\x00\x12=\n\rCancelReserve\x12\x15.CancelReserveRequest\x1a\x13.CancelReserveReply\"\x00\x12\x31\n\x0bGetAllSeats\x12\x10.AllSeatsRequest\x1a\x0e.AllSeatsReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'airline_service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_FREESEATREQUEST']._serialized_start=25
-  _globals['_FREESEATREQUEST']._serialized_end=42
-  _globals['_FREESEATREPLY']._serialized_start=44
-  _globals['_FREESEATREPLY']._serialized_end=76
-  _globals['_AIRLINESERVICE']._serialized_start=78
-  _globals['_AIRLINESERVICE']._serialized_end=146
+  _globals['_ALLFLIGHTSREQUEST']._serialized_start=25
+  _globals['_ALLFLIGHTSREQUEST']._serialized_end=44
+  _globals['_ALLFLIGHTSREPLY']._serialized_start=46
+  _globals['_ALLFLIGHTSREPLY']._serialized_end=84
+  _globals['_FREESEATREQUEST']._serialized_start=86
+  _globals['_FREESEATREQUEST']._serialized_end=122
+  _globals['_FREESEATREPLY']._serialized_start=124
+  _globals['_FREESEATREPLY']._serialized_end=156
+  _globals['_RESERVEREQUEST']._serialized_start=158
+  _globals['_RESERVEREQUEST']._serialized_end=214
+  _globals['_RESERVEREPLY']._serialized_start=216
+  _globals['_RESERVEREPLY']._serialized_end=230
+  _globals['_CONFIRMRESERVEREQUEST']._serialized_start=232
+  _globals['_CONFIRMRESERVEREQUEST']._serialized_end=295
+  _globals['_CONFIRMRESERVEREPLY']._serialized_start=297
+  _globals['_CONFIRMRESERVEREPLY']._serialized_end=318
+  _globals['_CANCELRESERVEREQUEST']._serialized_start=320
+  _globals['_CANCELRESERVEREQUEST']._serialized_end=382
+  _globals['_CANCELRESERVEREPLY']._serialized_start=384
+  _globals['_CANCELRESERVEREPLY']._serialized_end=404
+  _globals['_ALLSEATSREQUEST']._serialized_start=406
+  _globals['_ALLSEATSREQUEST']._serialized_end=442
+  _globals['_ALLSEATSREPLY']._serialized_start=444
+  _globals['_ALLSEATSREPLY']._serialized_end=476
+  _globals['_AIRLINESERVICE']._serialized_start=479
+  _globals['_AIRLINESERVICE']._serialized_end=829
 # @@protoc_insertion_point(module_scope)
