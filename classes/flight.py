@@ -4,7 +4,6 @@ class SeatStatus(Enum):
     FREE = 1
     TEMPORARY_RESERVED = 2
     RESERVED = 3
-SeatStatus = Enum('SeatStatus', [('FREE', 1), ('TEMPORARY_RESERVED', 2), ('RESERVED', 3)])
 
 class Flight:
     def __init__(self, id, source, dest, seats_amount):
@@ -30,4 +29,7 @@ class Flight:
         
     def free_seat(self, seat_number):
         self.seats[seat_number] = SeatStatus.FREE
+    
+    def all_seats(self):
+        return self.seats
     

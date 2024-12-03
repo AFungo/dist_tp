@@ -4,20 +4,23 @@ class Airline:
         self.name = name
         self.flights = flights
 
+    def get_all_flights(self):
+        return self.flights
+
     def get_flight(self, source, dest):
         for flight in self.flights:
             if flight.source == source and flight.dest == dest:
                 return flight.id
         return None
 
-    def get_flight_by_id(self, service_id):
+    def get_flight_by_id(self, flight_id):
         for f in self.flights:
-            if f.id == service_id:
+            if f.id == flight_id:
                 return f
         return None
 
-    def get_free_seats(self, service_id):
-        flight = self.get_flight_by_id(service_id)
+    def get_free_seats(self, flight_id):
+        flight = self.get_flight_by_id(flight_id)
         if flight != None:
             free_seats = []
             for i in range(len(flight.seats)):
@@ -26,19 +29,19 @@ class Airline:
             return free_seats
         return None
     
-    def reserve(self, service_id, seat_number):
-        flight = self.get_flight_by_id(service_id)
+    def reserve(self, flight_id, seat_number):
+        flight = self.get_flight_by_id(flight_id)
         if flight.is_free(seat_number):
             flight.temporary_reserve_seat(seat_number)
 
-    def confirm_reserve(self, service_id, seat_number):
-        flight = self.get_flight_by_id(service_id)
+    def confirm_reserve(self, flight_id, seat_number):
+        flight = self.get_flight_by_id(flight_id)
         if flight.is_temporary_reserved(seat_number):
             flight.reserve_seat(seat_number)
 
-    def cancel_reserve(self, service_id, seat_number):
-        flight = self.get_flight_by_id(service_id)
-        if not flight.is_free(seat_number):
+    def cancel_reserve(self, flight_id, seat_number):
+        flight = self.get_flight_by_id(flight_id)
+        if flight.is_temporary_reserved(seat_number):
             flight.free_seat(seat_number)
 
     def find_all_paths(self, start, end):
@@ -60,3 +63,7 @@ class Airline:
     
     def add_flight(self, flight):
         self.flights.append(flight)
+
+    def get_all_seats(self, flight_id):
+        f = self.get_flight_by_id(flight_id)
+        return f.all_seats()        
