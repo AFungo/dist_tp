@@ -13,34 +13,27 @@ class Airline:
                 return flight.id
         return None
 
-    def get_flight_by_id(self, flight_id):
+    def get_flight(self, flight_id):
         for f in self.flights:
             if f.id == flight_id:
                 return f
         return None
 
     def get_free_seats(self, flight_id):
-        flight = self.get_flight_by_id(flight_id)
-        if flight != None:
-            free_seats = []
-            for i in range(len(flight.seats)):
-                if flight.is_free(i):
-                    free_seats.append(i)
-            return free_seats
-        return None
-    
+        return [f for f in self.get_flight(flight_id) if f.is_free()]
+        
     def reserve(self, flight_id, seat_number):
-        flight = self.get_flight_by_id(flight_id)
+        flight = self.get_flight(flight_id)
         if flight.is_free(seat_number):
             flight.temporary_reserve_seat(seat_number)
 
     def confirm_reserve(self, flight_id, seat_number):
-        flight = self.get_flight_by_id(flight_id)
+        flight = self.get_flight(flight_id)
         if flight.is_temporary_reserved(seat_number):
             flight.reserve_seat(seat_number)
 
     def cancel_reserve(self, flight_id, seat_number):
-        flight = self.get_flight_by_id(flight_id)
+        flight = self.get_flight(flight_id)
         if flight.is_temporary_reserved(seat_number):
             flight.free_seat(seat_number)
 
@@ -65,5 +58,5 @@ class Airline:
         self.flights.append(flight)
 
     def get_all_seats(self, flight_id):
-        f = self.get_flight_by_id(flight_id)
-        return f.all_seats()        
+        f = self.get_flight(flight_id)
+        return f.get_seats()        
