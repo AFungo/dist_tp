@@ -7,9 +7,9 @@ class Airline:
     def get_all_flights(self):
         return self.flights
 
-    def get_flight(self, source, dest):
+    def get_flight(self, src, dest):
         for flight in self.flights:
-            if flight.source == source and flight.dest == dest:
+            if flight.src == src and flight.dest == dest:
                 return flight.id
         return None
 
@@ -36,23 +36,6 @@ class Airline:
         flight = self.get_flight(flight_id)
         if flight.is_temporary_reserved(seat_number):
             flight.free_seat(seat_number)
-
-    def find_all_paths(self, start, end):
-        stack = [(start, [start])]
-        paths = []
-
-        while stack:
-            current, path = stack.pop()
-
-            if current == end:
-                paths.append(path)
-                continue
-
-            for flight in [f for f in self.flights if f.source == current]:
-                if flight.dest not in path:
-                    stack.append((flight.dest, path + [flight.dest]))
-
-        return paths
     
     def add_flight(self, flight):
         self.flights.append(flight)

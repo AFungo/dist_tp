@@ -1,10 +1,12 @@
 
-from classes.airline import Company
+from classes.airline import Airline
 from classes.flight import Flight
+from classes.ticket_service import TicketService
 from classes.airport import Airport
 
 def main():
-    company = Company("Aerolineas Argentina")
+    company = Airline("Aerolineas Argentina")
+    
     company.flights.append(Flight(1, Airport.RCU, Airport.EZE, 2))
     company.flights.append(Flight(2, Airport.EZE, Airport.RCU, 2))
     
@@ -20,8 +22,11 @@ def main():
     company.flights.append(Flight(9, Airport.GDZ, Airport.EZE, 2))
     company.flights.append(Flight(10, Airport.EZE, Airport.GDZ, 2))
     
-    print(company.find_all_paths(Airport.RCU, Airport.AEP))
+    ticket_service = TicketService([company])
+    f = ticket_service.get_flights(Airport.RCU, Airport.AEP)
     
+    for fl in f:
+        print(fl)
 
     #flight_id = company.get_flight(Airport.RCU, Airport.EZE)
     #print("Flight_id ", flight_id)

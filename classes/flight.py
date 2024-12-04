@@ -6,9 +6,9 @@ class SeatStatus(Enum):
     RESERVED = 3
 
 class Flight:
-    def __init__(self, id, source, dest, seats_amount):
+    def __init__(self, id, src, dest, seats_amount):
         self.id = id
-        self.source = source
+        self.src = src
         self.dest = dest
         self.seats = [SeatStatus.FREE] * seats_amount
 
@@ -42,3 +42,7 @@ class Flight:
     def _validate_seat_number(self, seat_number):
         if seat_number < 0 or seat_number >= len(self.seats):
             raise ValueError(f"Invalid seat number: {seat_number}")
+
+    def __repr__(self):
+        string = f"<{self.id}, {self.src}, {self.dest}>"
+        return string
