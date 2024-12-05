@@ -1,3 +1,6 @@
+from classes.flight import SeatStatus
+
+
 class Airline:
     
     def __init__(self, name, flights=[]):
@@ -20,7 +23,7 @@ class Airline:
         return None
 
     def get_free_seats(self, flight_id):
-        return [f for f in self.get_flight(flight_id) if f.is_free()]
+        return self.get_flight(flight_id).get_free_seats()
         
     def reserve(self, flight_id, seat_number):
         flight = self.get_flight(flight_id)

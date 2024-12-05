@@ -39,6 +39,9 @@ class Flight:
     def get_seats(self):
         return self.seats
 
+    def get_free_seats(self):
+        return [i for i in range(len(self.seats)) if self.is_free(i)]
+    
     def _validate_seat_number(self, seat_number):
         if seat_number < 0 or seat_number >= len(self.seats):
             raise ValueError(f"Invalid seat number: {seat_number}")
