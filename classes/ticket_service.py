@@ -25,9 +25,15 @@ class TicketService:
         return [f for a in self.airlines for f in a.get_all_seats(flight_id)]
     
     def buy_ticket(self, flight_id, seat_number):
+        print("buy")
         for a in self.airlines:
             f = a.get_flight(flight_id)
-            if not f is None:
+            if f is not None:
+                print(f)
+                print(a.get_free_seats(flight_id))
+                a.reserve(flight_id, seat_number)
+                a.confirm_reserve(flight_id, seat_number)
+                print(a.get_free_seats(flight_id))
                 break
             
-        f.reserve_seat(seat_number)
+        # f.reserve_seat(seat_number)
