@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+// The greeting service definition.
+service TicketService {
+  rpc GetFlightsByRoute (FlightsByRouteRequest) returns (FlightsByRouteReply){}
+  rpc BuyFlightPackage (BuyFlightPackageRequest) returns (BuyFlightPackageReply){}
+}
+
+message FlightsByRouteRequest{
+  string src = 1;
+  string dest = 2;
+}
+
+message FlightsByRouteReply{
+  string flights = 1;
+}
+
+message BuyFlightPackageRequest{
+  repeated int32 flights_id = 1;
+  repeated int32 seat_numbers = 2;
+}
+
+message BuyFlightPackageReply{
+}
