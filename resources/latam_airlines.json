@@ -1,0 +1,24 @@
+{
+    "name": "LATAM Airlines",
+    "flights": [
+        {
+            "src": "RCU",
+            "dest": "GDZ",  
+            "seats_available": 2,
+            "id": 3
+        },
+        {
+            "src": "EZE",
+            "dest": "GDZ",
+            "seats_available": 2,
+            "id": 4
+        },
+        {
+            "src": "GDZ",
+            "dest": "AEP",
+            "seats_available": 2,
+            "id": 5
+        }
+    ],
+    "port": "5001"
+}
