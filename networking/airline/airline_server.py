@@ -1,12 +1,9 @@
-import sys
-from pathlib import Path
-
-# Add the root directory to sys.path
-sys.path.insert(0, str(Path(__file__).parent))
-
+import json
+import logging
 import grpc
-from networking.airline_service_pb2 import FreeSeatReply, AllFlightsReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, AllSeatsReply
-from networking.airline_service_pb2_grpc import AirlineServiceServicer, add_AirlineServiceServicer_to_server
+
+from networking.airline.airline_service_pb2 import FreeSeatReply, AllFlightsReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, AllSeatsReply
+from networking.airline.airline_service_pb2_grpc import AirlineServiceServicer, add_AirlineServiceServicer_to_server
 from concurrent import futures
 
 class AirlineService(AirlineServiceServicer):
@@ -17,7 +14,11 @@ class AirlineService(AirlineServiceServicer):
         return FreeSeatReply(message=str(self.airline.get_free_seats(request.flight_id)))
 
     def GetAllFlights(self, request, context):
-        return AllFlightsReply(all_flights=str(self.airline.get_all_flights()))
+        
+        self.airline.to_dict()
+        flights_json = json.dumps(self.airline.to_dict())
+        
+        return AllFlightsReply(all_flights=flights_json)
 
     def Reserve(self, request, context):
         self.airline.reserve(request.flight_id, request.seat_number)
@@ -41,6 +42,7 @@ class AirlineServer:
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     def start(self):
+        logging.basicConfig()
         add_AirlineServiceServicer_to_server(AirlineService(self.airline), self.server)
         self.server.add_insecure_port("[::]:" + self.port)
         self.server.start()
