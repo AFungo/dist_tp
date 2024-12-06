@@ -10,7 +10,7 @@ class Flight:
         self.id = id
         self.src = src
         self.dest = dest
-        self.seats = [SeatStatus.FREE] * seats_amount
+        self.seats = [SeatStatus.FREE.value] * seats_amount
 
     def is_free(self, seat_number):
         self._validate_seat_number(seat_number)
@@ -26,15 +26,15 @@ class Flight:
     
     def reserve_seat(self, seat_number):
         self._validate_seat_number(seat_number)
-        self.seats[seat_number] = SeatStatus.RESERVED
+        self.seats[seat_number] = SeatStatus.RESERVED.value
         
     def temporary_reserve_seat(self, seat_number):
         self._validate_seat_number(seat_number)
-        self.seats[seat_number] = SeatStatus.TEMPORARY_RESERVED
+        self.seats[seat_number] = SeatStatus.TEMPORARY_RESERVED.value
         
     def free_seat(self, seat_number):
         self._validate_seat_number(seat_number)
-        self.seats[seat_number] = SeatStatus.FREE
+        self.seats[seat_number] = SeatStatus.FREE.value
     
     def get_seats(self):
         return self.seats
@@ -49,3 +49,12 @@ class Flight:
     def __repr__(self):
         string = f"<{self.id}, {self.src}, {self.dest}>"
         return string
+    
+    def to_dict(self):
+        return {
+            self.id : {    
+                "src" : self.src,
+                "dest" : self.dest,
+                "seats" : self.seats
+            }
+        }
