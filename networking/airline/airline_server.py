@@ -14,11 +14,9 @@ class AirlineService(AirlineServiceServicer):
         return FreeSeatReply(message=str(self.airline.get_free_seats(request.flight_id)))
 
     def GetAllFlights(self, request, context):
-        
-        self.airline.to_dict()
-        flights_json = json.dumps(self.airline.to_dict())
-        
-        return AllFlightsReply(all_flights=flights_json)
+        flights = self.airline.get_all_flights()
+        flights = [f.to_dict() for f in flights.values()]
+        return AllFlightsReply(all_flights=json.dumps(flights))
 
     def Reserve(self, request, context):
         self.airline.reserve(request.flight_id, request.seat_number)

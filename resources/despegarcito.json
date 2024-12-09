@@ -1,7 +1,7 @@
 {
     "port": "8001",
     "airline_addresses": {
-        "Aerolíneas Argentinas": "localhost:5000",
-        "LATAM Airlines": "localhost:5001"
+        "LATAM Airlines": "localhost:5001",
+        "Aerolíneas Argentinas": "localhost:5000"
     }
 }

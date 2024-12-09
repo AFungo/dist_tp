@@ -1,3 +1,4 @@
+import json
 import logging
 import grpc
 import networking
@@ -35,11 +36,15 @@ def main():
     with grpc.insecure_channel(address) as channel:
         stub = networking.ticket_service.ticket_service_pb2_grpc.TicketServiceStub(channel)
         response = stub.GetFlightsByRoute(networking.ticket_service.ticket_service_pb2.FlightsByRouteRequest(src="RCU", dest="AEP"))
+        fs = json.loads(response.flights)
+        for f in fs:
+            print(f)
+        
         stub.BuyFlightPackage(networking.ticket_service.ticket_service_pb2.BuyFlightPackageRequest(flights_id=[5, 7], seat_numbers=[1,1]))
-        r = response.flights.split('[')
-        for a in r:
-            print(a)
-    
+        print()
+        fs = json.loads(response.flights)
+        for f in fs:
+            print(f)
         
 if __name__ == "__main__":
     logging.basicConfig()
