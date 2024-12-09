@@ -11,6 +11,12 @@ class Flight:
         self.src = src
         self.dest = dest
         self.seats = [SeatStatus.FREE.value] * seats_amount
+        
+    def __init__(self, id, src, dest, seats):
+        self.id = id
+        self.src = src
+        self.dest = dest
+        self.seats = seats
 
     def is_free(self, seat_number):
         self._validate_seat_number(seat_number)
@@ -58,3 +64,4 @@ class Flight:
                 "seats" : self.seats
             }
         }
+    

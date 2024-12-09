@@ -2,10 +2,10 @@ class TicketService:
     def __init__(self, airlines=[]):
         self.airlines = airlines
         
-    def get_flights_by_src(self, src):
-        return [f for a in self.airlines for f in a.flights if f.src == src]
+    def get_flights_by_src(self, flights, src):
+        return [f for f in flights if f.src == src]
     
-    def get_flights(self, src, dest):
+    def get_flights(self, flights, src, dest):
         stack = [(src, [])]
         paths = []
         while stack:
@@ -15,7 +15,7 @@ class TicketService:
                 paths.append(path)
                 continue
 
-            for flight in self.get_flights_by_src(current):
+            for flight in self.get_flights_by_src(flights, current):
                 if flight.dest not in [f.src for f in path]:
                     stack.append((flight.dest, path + [flight]))
                 

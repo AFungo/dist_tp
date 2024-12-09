@@ -31,12 +31,15 @@ class Airline:
     def get_all_seats(self, flight_id):
         return self.flight[flight_id].get_seats()        
     
+    def __repr__(self):
+        return self.name
     
     def to_dict(self):
         d = {}
-        d["name"] = self.name       
+        d["name"] = self.name   
+        d["flights"] = []    
         for flight in self.flights.values():
-            d.update(flight.to_dict())
+            d["flights"].append(flight.to_dict())
             
         return d
     
