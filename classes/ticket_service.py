@@ -21,16 +21,17 @@ class TicketService:
         :param dest: The target destination.
         :return: A list of flight paths, where each path is a list of flights.
         """
-        stack = [(src, [])]
-        paths = []
+        stack = [(src, [])] # Stack for depth-first search: (current location, path so far)
+        paths = []  # List to store all valid paths
         while stack:
             current, path = stack.pop()
 
-            if current == dest:
+            if current == dest: # If destination is reached, add the path to results
                 paths.append(path)
                 continue
-
+            # Explore flights from the current source
             for flight in self.get_flights_by_src(flights, current):
+                # Avoid cycles by checking if the destination is already visited in the path
                 if flight.dest not in [f.src for f in path]:
                     stack.append((flight.dest, path + [flight]))
                 
