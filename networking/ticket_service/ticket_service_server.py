@@ -14,23 +14,38 @@ from networking.ticket_service.ticket_service_pb2_grpc import TicketServiceServi
 from concurrent import futures
 
 class TicketServiceServicer(TicketServiceServicer):
+    """
+    Implements the TicketService gRPC service to manage ticket-related operations.
+    """
+
     def __init__(self, airline_addresses):
-        self.ticket_service = TicketService()
-        self.airline_clients = []
-        self.airline_flights = {}
+        """
+        Initializes the TicketServiceServicer with the given airline addresses.
 
+        :param airline_addresses: A dictionary mapping airline names to their gRPC server addresses.
+        """
 
+        self.ticket_service = TicketService() # Service for ticket-related business logic.
+        self.airline_clients = [] # List of AirlineServiceStub clients for gRPC communication.
+        self.airline_flights = {} # Maps flight IDs to their respective airline clients.
+
+        # Create a gRPC channel and stub for each airline address.
         for address in airline_addresses.values():
             channel = grpc.insecure_channel(address)
             self.airline_clients.append(AirlineServiceStub(channel))
     
 
     def GetFlightsByRoute(self, request, context):
+        """
+        Handles the gRPC request to get all flight packages available for a given route.
+        """
         flights = []
+        # Retrieve flights from all airline clients.
         for airline in self.airline_clients:
             response = airline.GetAllFlights(airline_service_pb2.AllFlightsRequest())
             airline_flights = json.loads(response.all_flights)
             
+            # Process each flight and map it to the corresponding airline.
             for flight in airline_flights:
                 for f_id, f_data in flight.items():
                     self.airline_flights[int(f_id)] =  airline
@@ -38,31 +53,52 @@ class TicketServiceServicer(TicketServiceServicer):
                     f.set_seats_status(f_data["seats"]) 
                     flights.append(f)
 
+        # Use TicketService to find flight packages matching the source and destination.
         flight_package = self.ticket_service.get_flights(flights, request.src, request.dest)
         paths = [[flight.to_dict() for flight in package] for package in flight_package]
         return FlightsByRouteReply(flights=json.dumps(paths))
 
     def BuyFlightPackage(self, request, context):
+        """
+        Handles the gRPC request to buy a flight package (multiple flights).
+        """
         for i in range(len(request.flights_id)):
             id = request.flights_id[i]
             seat = request.seat_numbers[i]
-            # Aca deberiamos hacer como la reserva de tres pasos?
-            response = self.airline_flights[id].Reserve(airline_service_pb2.ReserveRequest(flight_id=id, seat_number=seat))
-            #chequeamos que el response este habilitado, es decir esta reservado
-            #luego mandamos una request con confirmar la reserva por lo que ailine lo cambia a ocupado
-            #esta oficialmente comprado
-            #en el caso que fallo la reserva en la primera request se hace el camino de informarle 
-            # al usuario de que la compra no se pudo realizar
+            # Step 1: Attempt to reserve the seat on the flight.
+            response = self.airline_flights[id].Reserve(
+                airline_service_pb2.ReserveRequest(flight_id=id, seat_number=seat)
+            )
+            
+            # TODO: Check the response to ensure the seat was successfully reserved.
+            # If successful, proceed to confirm the reservation.
+            # If reservation fails, inform the user and handle rollback.
+
+            # Step 2: Confirm the reservation, officially marking the seat as purchased.
+            # This step should only be executed if the reservation was successful.
+            # TODO: Add the confirm logic here.
         return BuyFlightPackageReply()
 
 class TicketServiceServer:
-    def __init__(self, ticket_service, port, airline_addresses):
-        #self.ticket_service = ticket_service
+    """
+    Represents the server that hosts the TicketService gRPC service.
+    """
+    
+    def __init__(self, port, airline_addresses):
+        """
+        Initialize the TicketServiceServer.
+
+        :param port: The port number the server will listen on.
+        :param airline_addresses: A dictionary mapping airline names to their gRPC server addresses.
+        """
         self.port = port
         self.airline_addresses = airline_addresses
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         
     def start(self):
+        """
+        Start the gRPC server, register the TicketService, and begin listening for requests.
+        """
         logging.basicConfig()
         add_TicketServiceServicer_to_server(TicketServiceServicer(self.airline_addresses), self.server)
         self.server.add_insecure_port("[::]:" + self.port)

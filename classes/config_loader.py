@@ -34,8 +34,7 @@ class ConfigLoader:
 
     def create_ticket_service_server(self): 
         data = self.load_config_file()
-        ticket_service = TicketService()
-        server = TicketServiceServer(ticket_service, data["port"], data["airline_addresses"])
+        server = TicketServiceServer(data["port"], data["airline_addresses"])
         return server 
     
     def get_address(self):
