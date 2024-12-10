@@ -6,29 +6,24 @@ class SeatStatus(Enum):
     RESERVED = 3
 
 class Flight:
-    def __init__(self, id, src, dest, seats_amount):
+    
+    def __init__(self, id, src, dest, seats_amount=1):
         self.id = id
         self.src = src
         self.dest = dest
         self.seats = [SeatStatus.FREE.value] * seats_amount
-        
-    def __init__(self, id, src, dest, seats):
-        self.id = id
-        self.src = src
-        self.dest = dest
-        self.seats = seats
 
     def is_free(self, seat_number):
         self._validate_seat_number(seat_number)
-        return self.seats[seat_number] == SeatStatus.FREE
+        return self.seats[seat_number] == SeatStatus.FREE.value
 
     def is_reserved(self, seat_number):
         self._validate_seat_number(seat_number)
-        return self.seats[seat_number] == SeatStatus.RESERVED
+        return self.seats[seat_number] == SeatStatus.RESERVED.value
     
     def is_temporary_reserved(self, seat_number):
         self._validate_seat_number(seat_number)
-        return self.seats[seat_number] == SeatStatus.TEMPORARY_RESERVED
+        return self.seats[seat_number] == SeatStatus.TEMPORARY_RESERVED.value
     
     def reserve_seat(self, seat_number):
         self._validate_seat_number(seat_number)
@@ -37,7 +32,7 @@ class Flight:
     def temporary_reserve_seat(self, seat_number):
         self._validate_seat_number(seat_number)
         self.seats[seat_number] = SeatStatus.TEMPORARY_RESERVED.value
-        
+
     def free_seat(self, seat_number):
         self._validate_seat_number(seat_number)
         self.seats[seat_number] = SeatStatus.FREE.value
@@ -53,7 +48,7 @@ class Flight:
             raise ValueError(f"Invalid seat number: {seat_number}")
 
     def __repr__(self):
-        string = f"<{self.id}, {self.src}, {self.dest}>"
+        string = f"<{self.id}, {self.src}, {self.dest}, {self.seats}>"
         return string
     
     def to_dict(self):
@@ -64,4 +59,3 @@ class Flight:
                 "seats" : self.seats
             }
         }
-    
