@@ -1,11 +1,26 @@
 class TicketService:
-    def __init__(self, airlines=[]):
-        self.airlines = airlines
-        
+    """
+    A service to manage tickets and interact with multiple airlines.
+    """
+  
     def get_flights_by_src(self, flights, src):
+        """
+        Retrieve flights originating from a specific source.
+        :param flights: A list of flights.
+        :param src: The source location to filter flights.
+        :return: A list of flights starting from the given source.
+        """
         return [f for f in flights if f.src == src]
     
     def get_flights(self, flights, src, dest):
+        """
+        Find all possible paths (sequences of flights) from a source to a destination.
+
+        :param flights: A list of available flights.
+        :param src: The starting location.
+        :param dest: The target destination.
+        :return: A list of flight paths, where each path is a list of flights.
+        """
         stack = [(src, [])]
         paths = []
         while stack:
@@ -19,19 +34,4 @@ class TicketService:
                 if flight.dest not in [f.src for f in path]:
                     stack.append((flight.dest, path + [flight]))
                 
-        return paths   
-    
-    def get_all_seats(self, flight_id):
-        return [f for a in self.airlines for f in a.get_all_seats(flight_id)]
-    
-    def buy_ticket(self, flight_id, seat_number):
-        for a in self.airlines:
-            f = a.get_flight(flight_id)
-            if f is not None:
-                print(f)
-                print(a.get_free_seats(flight_id))
-                a.reserve(flight_id, seat_number)
-                a.confirm_reserve(flight_id, seat_number)
-                print(a.get_free_seats(flight_id))
-                break
-            
+        return paths
