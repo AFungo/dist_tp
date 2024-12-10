@@ -29,12 +29,15 @@ class Flight:
     def get_free_seats(self) -> List[int]:
         return [i for i, status in enumerate(self.seats) if status == SeatStatus.FREE]
 
+    def set_seats_status(self, seats):
+        self.seats = [SeatStatus(seat) for seat in seats]
+
     def to_dict(self):
         return {
             self.id : {    
                 "src" : self.src,
                 "dest" : self.dest,
-                "seats" : [status for status in self.seats]
+                "seats" : [status.value for status in self.seats]
             }
         }
 

@@ -35,7 +35,7 @@ class TicketServiceServicer(TicketServiceServicer):
                 for f_id, f_data in flight.items():
                     self.airline_flights[int(f_id)] =  airline
                     f = Flight(f_id, f_data["src"], f_data["dest"])
-                    f.seats = f_data["seats"]
+                    f.set_seats_status(f_data["seats"]) 
                     flights.append(f)
 
         flight_package = self.ticket_service.get_flights(flights, request.src, request.dest)
