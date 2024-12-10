@@ -17,11 +17,14 @@ class TicketServiceServicer(TicketServiceServicer):
     def __init__(self, airline_addresses):
         self.ticket_service = TicketService()
         self.airline_clients = []
-        
+        self.airline_flights = {}
+
+
         for address in airline_addresses.values():
             channel = grpc.insecure_channel(address)
             self.airline_clients.append(AirlineServiceStub(channel))
     
+
     def GetFlightsByRoute(self, request, context):
         flights = []
         for airline in self.airline_clients:
@@ -30,18 +33,26 @@ class TicketServiceServicer(TicketServiceServicer):
             
             for flight in airline_flights:
                 for f_id, f_data in flight.items():
-                    flights.append(Flight(f_id, f_data["src"], f_data["dest"], seats=f_data["seats"]))
-            
+                    self.airline_flights[int(f_id)] =  airline
+                    f = Flight(f_id, f_data["src"], f_data["dest"])
+                    f.seats = f_data["seats"]
+                    flights.append(f)
+
         flight_package = self.ticket_service.get_flights(flights, request.src, request.dest)
         paths = [[flight.to_dict() for flight in package] for package in flight_package]
         return FlightsByRouteReply(flights=json.dumps(paths))
 
     def BuyFlightPackage(self, request, context):
-        for id in request.flights_id:
-            
-            
-        self.ticket_service.buy_ticket(request.flights_id[0], request.seat_numbers[0])
-        self.ticket_service.buy_ticket(request.flights_id[1], request.seat_numbers[1])
+        for i in range(len(request.flights_id)):
+            id = request.flights_id[i]
+            seat = request.seat_numbers[i]
+            # Aca deberiamos hacer como la reserva de tres pasos?
+            response = self.airline_flights[id].Reserve(airline_service_pb2.ReserveRequest(flight_id=id, seat_number=seat))
+            #chequeamos que el response este habilitado, es decir esta reservado
+            #luego mandamos una request con confirmar la reserva por lo que ailine lo cambia a ocupado
+            #esta oficialmente comprado
+            #en el caso que fallo la reserva en la primera request se hace el camino de informarle 
+            # al usuario de que la compra no se pudo realizar
         return BuyFlightPackageReply()
 
 class TicketServiceServer:
