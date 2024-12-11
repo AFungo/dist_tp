@@ -30,56 +30,47 @@ class Airline:
         """
         return self.flights[flight_id]
 
-    def get_free_seats(self, flight_id):
-        """
-        Retrieve the number of free seats for a specific flight.
-
-        :param flight_id: The ID of the flight.
-        :return: The number of free seats available.
-        """
-        return self.flights[flight_id].get_free_seats()
-        
-    def reserve(self, flight_id, seat_number):
+    def reserve(self, flight_id, seats_amount):
         """
         Temporarily reserve a seat for a specific flight.
 
         :param flight_id: The ID of the flight.
-        :param seat_number: The seat number to reserve.
+        :param seats_amount: The amount of seats to reserve.
         """
         flight = self.get_flight(flight_id)
-        if flight.is_free(seat_number):
-            flight.temporary_reserve_seat(seat_number)
+        if flight.are_seats_available(seats_amount):
+            flight.temporary_reserve_seat(seats_amount)
 
-    def confirm_reserve(self, flight_id, seat_number):
+    def confirm_reserve(self, flight_id, seats_amount):
         """
         Confirm a temporary reservation for a seat.
 
         :param flight_id: The ID of the flight.
-        :param seat_number: The seat number to confirm.
+        :param seats_amount: The amount of seats to confirm.
         """
         flight = self.get_flight(flight_id)
-        if flight.is_temporary_reserved(seat_number):
-            flight.reserve_seat(seat_number)
+        if flight.is_temporary_reserved(seats_amount):
+            flight.reserve_seat(seats_amount)
 
-    def cancel_reserve(self, flight_id, seat_number):
+    def cancel_reserve(self, flight_id, seats_amount):
         """
         Cancel a temporary reservation for a seat.
 
         :param flight_id: The ID of the flight.
-        :param seat_number: The seat number to cancel.
+        :param seats_amount: The amount of seats to cancel.
         """
         flight = self.get_flight(flight_id)
-        if flight.is_temporary_reserved(seat_number):
-            flight.free_seat(seat_number)
+        if flight.is_temporary_reserved(seats_amount):
+            flight.free_seat(seats_amount)
 
-    def get_all_seats(self, flight_id):
+    def get_seats_available(self, flight_id):
         """
         Retrieve all seats for a specific flight.
 
         :param flight_id: The ID of the flight.
         :return: A list of all seats for the flight.
         """
-        return self.flight[flight_id].get_seats()        
+        return self.flight[flight_id].get_seats_available()        
     
     def __repr__(self):
         """

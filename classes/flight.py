@@ -1,13 +1,3 @@
-from enum import Enum
-from typing import List, Dict
-
-
-class SeatStatus(Enum):
-    FREE = 1
-    TEMPORARY_RESERVED = 2
-    RESERVED = 3
-
-
 class Flight:
     def __init__(self, flight_id: int, src: str, dest: str, seats_amount: int = 1):
         if seats_amount <= 0:
@@ -16,52 +6,42 @@ class Flight:
         self.id = flight_id
         self.src = src
         self.dest = dest
-        self.seats = [SeatStatus.FREE] * seats_amount
+        self.seats_available = seats_amount
 
-    def check_seat_status(self, seat_number: int, status: SeatStatus) -> bool:
-        self._validate_seat_number(seat_number)
-        return self.seats[seat_number] == status
+    def are_seats_available(self, seats_amount):
+        return self.seats_available >= seats_amount
 
-    def change_seat_status(self, seat_number: int, new_status: SeatStatus) -> None:
-        self._validate_seat_number(seat_number)
-        self.seats[seat_number] = new_status
+    def get_seats_available(self):
+        return self.seats_available
 
-    def get_free_seats(self) -> List[int]:
-        return [i for i, status in enumerate(self.seats) if status == SeatStatus.FREE]
+    def reserve_seats(self, seats_amount: int) -> None:
+        self._validate_seats_amount(seats_amount)
+        self.seats_available -= seats_amount
 
-    def set_seats_status(self, seats):
-        self.seats = [SeatStatus(seat) for seat in seats]
-
+    def temporary_reserve_seat(self, seats_amount: int) -> None:
+        self._validate_seats_amount(seats_amount)
+        # Maybe append reservations in a buffer.
+        self.seats_available -= seats_amount
+        
+    def free_seats(self, seats_amount: int) -> None:
+        self.seats_available += seats_amount
+    
     def to_dict(self):
         return {
             self.id : {    
                 "src" : self.src,
                 "dest" : self.dest,
-                "seats" : [status.value for status in self.seats]
+                "seats" : self.seats_available
             }
         }
 
     def __repr__(self) -> str:
-        return f"<Flight {self.id}: {self.src} -> {self.dest}, Seats: {self.seats}>"
+        return f"<Flight {self.id}: {self.src} -> {self.dest}, Seats: {self.seats_available}>"
 
-    def _validate_seat_number(self, seat_number: int) -> None:
-        if not (0 <= seat_number < len(self.seats)):
-            raise ValueError(f"Invalid seat number: {seat_number}")
-
-    def is_free(self, seat_number: int) -> bool:
-        return self.check_seat_status(seat_number, SeatStatus.FREE)
-
-    def is_reserved(self, seat_number: int) -> bool:
-        return self.check_seat_status(seat_number, SeatStatus.RESERVED)
-
-    def is_temporary_reserved(self, seat_number: int) -> bool:
-        return self.check_seat_status(seat_number, SeatStatus.TEMPORARY_RESERVED)
-
-    def reserve_seat(self, seat_number: int) -> None:
-        self.change_seat_status(seat_number, SeatStatus.RESERVED)
-
-    def temporary_reserve_seat(self, seat_number: int) -> None:
-        self.change_seat_status(seat_number, SeatStatus.TEMPORARY_RESERVED)
-
-    def free_seat(self, seat_number: int) -> None:
-        self.change_seat_status(seat_number, SeatStatus.FREE)
+    def _validate_seats_amount(self, seats_amount: int) -> None:
+        if not (0 <= seats_amount < self.seats_available):
+            raise ValueError(f"Invalid seat number: {seats_amount}")
+    
+    def is_temporary_reserved(self, seats_amount: int) -> bool:
+        #TODO: See what to do with this method.
+        pass

@@ -3,7 +3,6 @@ import os
 
 from classes.airline import Airline
 from classes.flight import Flight
-from classes.ticket_service import TicketService
 from networking.airline.airline_server import AirlineServer
 from networking.ticket_service.ticket_service_server import TicketServiceServer
 
