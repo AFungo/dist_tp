@@ -22,7 +22,9 @@ def main():
         for f in fs:
             print(f)
         
-        stub.BuyFlightPackage(networking.ticket_service.ticket_service_pb2.BuyFlightPackageRequest(flights_id=[3, 5], seats_amount=[1, 1]))
+        response = stub.BuyFlightPackage(networking.ticket_service.ticket_service_pb2.BuyFlightPackageRequest(flights_id=[3, 5], seats_amount=1))
+        if(not response.buy_success):
+            print(response.message)
         print()
     
         response = stub.GetFlightsByRoute(networking.ticket_service.ticket_service_pb2.FlightsByRouteRequest(src="RCU", dest="AEP"))

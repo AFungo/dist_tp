@@ -35,8 +35,10 @@ class ReserveRequest(_message.Message):
     def __init__(self, flight_id: _Optional[int] = ..., seats_amount: _Optional[int] = ...) -> None: ...
 
 class ReserveReply(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("is_temp_reserved",)
+    IS_TEMP_RESERVED_FIELD_NUMBER: _ClassVar[int]
+    is_temp_reserved: bool
+    def __init__(self, is_temp_reserved: bool = ...) -> None: ...
 
 class ConfirmReserveRequest(_message.Message):
     __slots__ = ("flight_id", "seats_amount")
@@ -47,8 +49,10 @@ class ConfirmReserveRequest(_message.Message):
     def __init__(self, flight_id: _Optional[int] = ..., seats_amount: _Optional[int] = ...) -> None: ...
 
 class ConfirmReserveReply(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("is_reserved",)
+    IS_RESERVED_FIELD_NUMBER: _ClassVar[int]
+    is_reserved: bool
+    def __init__(self, is_reserved: bool = ...) -> None: ...
 
 class CancelReserveRequest(_message.Message):
     __slots__ = ("flight_id", "seats_amount")

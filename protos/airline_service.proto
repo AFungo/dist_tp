@@ -31,7 +31,7 @@ message ReserveRequest{
 }
 
 message ReserveReply{
-
+  bool is_temp_reserved = 1;
 }
 
 message ConfirmReserveRequest{
@@ -40,7 +40,7 @@ message ConfirmReserveRequest{
 }
 
 message ConfirmReserveReply{
-
+  bool is_reserved = 1;
 }
 
 message CancelReserveRequest{

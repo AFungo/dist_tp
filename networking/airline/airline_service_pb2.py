@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15\x61irline_service.proto\"\x13\n\x11\x41llFlightsRequest\"&\n\x0f\x41llFlightsReply\x12\x13\n\x0b\x61ll_flights\x18\x01 \x01(\t\"*\n\x15SeatsAvailableRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\"&\n\x13SeatsAvailableReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"9\n\x0eReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"\x0e\n\x0cReserveReply\"@\n\x15\x43onfirmReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"\x15\n\x13\x43onfirmReserveReply\"?\n\x14\x43\x61ncelReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"\x14\n\x12\x43\x61ncelReserveReply2\xbc\x02\n\x0e\x41irlineService\x12\x37\n\rGetAllFlights\x12\x12.AllFlightsRequest\x1a\x10.AllFlightsReply\"\x00\x12\x43\n\x11GetSeatsAvailable\x12\x16.SeatsAvailableRequest\x1a\x14.SeatsAvailableReply\"\x00\x12+\n\x07Reserve\x12\x0f.ReserveRequest\x1a\r.ReserveReply\"\x00\x12@\n\x0e\x43onfirmReserve\x12\x16.ConfirmReserveRequest\x1a\x14.ConfirmReserveReply\"\x00\x12=\n\rCancelReserve\x12\x15.CancelReserveRequest\x1a\x13.CancelReserveReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15\x61irline_service.proto\"\x13\n\x11\x41llFlightsRequest\"&\n\x0f\x41llFlightsReply\x12\x13\n\x0b\x61ll_flights\x18\x01 \x01(\t\"*\n\x15SeatsAvailableRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\"&\n\x13SeatsAvailableReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"9\n\x0eReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"(\n\x0cReserveReply\x12\x18\n\x10is_temp_reserved\x18\x01 \x01(\x08\"@\n\x15\x43onfirmReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"*\n\x13\x43onfirmReserveReply\x12\x13\n\x0bis_reserved\x18\x01 \x01(\x08\"?\n\x14\x43\x61ncelReserveRequest\x12\x11\n\tflight_id\x18\x01 \x01(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"\x14\n\x12\x43\x61ncelReserveReply2\xbc\x02\n\x0e\x41irlineService\x12\x37\n\rGetAllFlights\x12\x12.AllFlightsRequest\x1a\x10.AllFlightsReply\"\x00\x12\x43\n\x11GetSeatsAvailable\x12\x16.SeatsAvailableRequest\x1a\x14.SeatsAvailableReply\"\x00\x12+\n\x07Reserve\x12\x0f.ReserveRequest\x1a\r.ReserveReply\"\x00\x12@\n\x0e\x43onfirmReserve\x12\x16.ConfirmReserveRequest\x1a\x14.ConfirmReserveReply\"\x00\x12=\n\rCancelReserve\x12\x15.CancelReserveRequest\x1a\x13.CancelReserveReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -42,15 +42,15 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_RESERVEREQUEST']._serialized_start=170
   _globals['_RESERVEREQUEST']._serialized_end=227
   _globals['_RESERVEREPLY']._serialized_start=229
-  _globals['_RESERVEREPLY']._serialized_end=243
-  _globals['_CONFIRMRESERVEREQUEST']._serialized_start=245
-  _globals['_CONFIRMRESERVEREQUEST']._serialized_end=309
-  _globals['_CONFIRMRESERVEREPLY']._serialized_start=311
-  _globals['_CONFIRMRESERVEREPLY']._serialized_end=332
-  _globals['_CANCELRESERVEREQUEST']._serialized_start=334
-  _globals['_CANCELRESERVEREQUEST']._serialized_end=397
-  _globals['_CANCELRESERVEREPLY']._serialized_start=399
-  _globals['_CANCELRESERVEREPLY']._serialized_end=419
-  _globals['_AIRLINESERVICE']._serialized_start=422
-  _globals['_AIRLINESERVICE']._serialized_end=738
+  _globals['_RESERVEREPLY']._serialized_end=269
+  _globals['_CONFIRMRESERVEREQUEST']._serialized_start=271
+  _globals['_CONFIRMRESERVEREQUEST']._serialized_end=335
+  _globals['_CONFIRMRESERVEREPLY']._serialized_start=337
+  _globals['_CONFIRMRESERVEREPLY']._serialized_end=379
+  _globals['_CANCELRESERVEREQUEST']._serialized_start=381
+  _globals['_CANCELRESERVEREQUEST']._serialized_end=444
+  _globals['_CANCELRESERVEREPLY']._serialized_start=446
+  _globals['_CANCELRESERVEREPLY']._serialized_end=466
+  _globals['_AIRLINESERVICE']._serialized_start=469
+  _globals['_AIRLINESERVICE']._serialized_end=785
 # @@protoc_insertion_point(module_scope)

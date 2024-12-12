@@ -41,31 +41,43 @@ class TicketServiceServicer(TicketServiceServicer):
         for airline in self.airline_clients:
             response = airline.GetAllFlights(airline_service_pb2.AllFlightsRequest())
             airline_flights = json.loads(response.all_flights)
-            
             # Process each flight and map it to the corresponding airline.
-            for flight in airline_flights:
-                for f_id, f_data in flight.items():
-                    self.airline_flights[int(f_id)] =  airline
-                    f = Flight(f_id, f_data["src"], f_data["dest"], f_data["seats"])
-                    flights.append(f)
+            for f_data in airline_flights:
+                self.airline_flights[f_data["id"]] = airline
+                flights.append(f_data)
 
         # Use TicketService to find flight packages matching the source and destination.
         flight_package = self.ticket_service.get_flights(flights, request.src, request.dest)
-        paths = [[flight.to_dict() for flight in package] for package in flight_package]
-        return FlightsByRouteReply(flights=json.dumps(paths))
+        return FlightsByRouteReply(flights=json.dumps(flight_package))
+
 
     def BuyFlightPackage(self, request, context):
         """
         Handles the gRPC request to buy a flight package (multiple flights).
         """
-        for i in range(len(request.flights_id)):
-            id = request.flights_id[i]
-            seats_amount = request.seats_amount[i]
-            # Step 1: Attempt to reserve the seat on the flight.
-            response = self.airline_flights[id].Reserve(
+        seats_amount = request.seats_amount
+
+        for id in request.flights_id:
+            airline_stub = self.airline_flights[id]
+
+            response = airline_stub.Reserve(
                 airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
             )
-            
+
+            if not response.is_temp_reserved:
+                # manejo de error
+                return BuyFlightPackageReply(buy_success=False, message="ERROR")
+
+        for id in request.flights_id:        
+            response = airline_stub.ConfirmReserve(
+                airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
+            )
+            if not response.is_reserved:
+                # manejo de error
+                return BuyFlightPackageReply(buy_success=False, message="ERROR")
+        
+        return BuyFlightPackageReply()
+
             # TODO: Check the response to ensure the seat was successfully reserved.
             # If successful, proceed to confirm the reservation.
             # If reservation fails, inform the user and handle rollback.
@@ -73,7 +85,6 @@ class TicketServiceServicer(TicketServiceServicer):
             # Step 2: Confirm the reservation, officially marking the seat as purchased.
             # This step should only be executed if the reservation was successful.
             # TODO: Add the confirm logic here.
-        return BuyFlightPackageReply()
 
 class TicketServiceServer:
     """

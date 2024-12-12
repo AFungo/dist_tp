@@ -24,9 +24,13 @@ class BuyFlightPackageRequest(_message.Message):
     FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
     SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
     flights_id: _containers.RepeatedScalarFieldContainer[int]
-    seats_amount: _containers.RepeatedScalarFieldContainer[int]
-    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[_Iterable[int]] = ...) -> None: ...
+    seats_amount: int
+    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ...) -> None: ...
 
 class BuyFlightPackageReply(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("buy_success", "message")
+    BUY_SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    buy_success: bool
+    message: str
+    def __init__(self, buy_success: bool = ..., message: _Optional[str] = ...) -> None: ...
