@@ -10,7 +10,7 @@ class TicketService:
         :param src: The source location to filter flights.
         :return: A list of flights starting from the given source.
         """
-        return [f for f in flights if f.src == src]
+        return [f for f in flights if f["src"] == src]
     
     def get_flights(self, flights, src, dest):
         """
@@ -32,7 +32,7 @@ class TicketService:
             # Explore flights from the current source
             for flight in self.get_flights_by_src(flights, current):
                 # Avoid cycles by checking if the destination is already visited in the path
-                if flight.dest not in [f.src for f in path]:
-                    stack.append((flight.dest, path + [flight]))
+                if flight["dest"] not in [f["src"] for f in path]:
+                    stack.append((flight["dest"], path + [flight]))
                 
         return paths

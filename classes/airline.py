@@ -38,7 +38,7 @@ class Airline:
         :param seats_amount: The amount of seats to reserve.
         """
         flight = self.get_flight(flight_id)
-        flight.temporary_reserve_seats(seats_amount)
+        return flight.temporary_reserve_seats(seats_amount)
 
     def confirm_reserve(self, flight_id, seats_amount):
         """
@@ -48,8 +48,8 @@ class Airline:
         :param seats_amount: The amount of seats to confirm.
         """
         flight = self.get_flight(flight_id)
-        flight.reserve_seats(seats_amount)
-
+        return flight.reserve_seats(seats_amount)
+    
     def cancel_reserve(self, flight_id, seats_amount):
         """
         Cancel a temporary reservation for a seat.
@@ -58,7 +58,7 @@ class Airline:
         :param seats_amount: The amount of seats to cancel.
         """
         flight = self.get_flight(flight_id)
-        flight.free_seats(seats_amount)
+        return flight.free_seats(seats_amount)
 
     def get_seats_available(self, flight_id):
         """
