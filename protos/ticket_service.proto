@@ -17,7 +17,7 @@ message FlightsByRouteReply{
 
 message BuyFlightPackageRequest{
   repeated int32 flights_id = 1;
-  repeated int32 seat_numbers = 2;
+  repeated int32 seats_amount = 2;
 }
 
 message BuyFlightPackageReply{

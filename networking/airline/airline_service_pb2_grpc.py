@@ -26,7 +26,7 @@ if _version_not_supported:
 
 
 class AirlineServiceStub(object):
-    """The greeting service definition.
+    """The Airline Service definition.
     """
 
     def __init__(self, channel):
@@ -40,10 +40,10 @@ class AirlineServiceStub(object):
                 request_serializer=airline__service__pb2.AllFlightsRequest.SerializeToString,
                 response_deserializer=airline__service__pb2.AllFlightsReply.FromString,
                 _registered_method=True)
-        self.GetFreeSeats = channel.unary_unary(
-                '/AirlineService/GetFreeSeats',
-                request_serializer=airline__service__pb2.FreeSeatRequest.SerializeToString,
-                response_deserializer=airline__service__pb2.FreeSeatReply.FromString,
+        self.GetSeatsAvailable = channel.unary_unary(
+                '/AirlineService/GetSeatsAvailable',
+                request_serializer=airline__service__pb2.SeatsAvailableRequest.SerializeToString,
+                response_deserializer=airline__service__pb2.SeatsAvailableReply.FromString,
                 _registered_method=True)
         self.Reserve = channel.unary_unary(
                 '/AirlineService/Reserve',
@@ -60,15 +60,10 @@ class AirlineServiceStub(object):
                 request_serializer=airline__service__pb2.CancelReserveRequest.SerializeToString,
                 response_deserializer=airline__service__pb2.CancelReserveReply.FromString,
                 _registered_method=True)
-        self.GetAllSeats = channel.unary_unary(
-                '/AirlineService/GetAllSeats',
-                request_serializer=airline__service__pb2.AllSeatsRequest.SerializeToString,
-                response_deserializer=airline__service__pb2.AllSeatsReply.FromString,
-                _registered_method=True)
 
 
 class AirlineServiceServicer(object):
-    """The greeting service definition.
+    """The Airline Service definition.
     """
 
     def GetAllFlights(self, request, context):
@@ -77,7 +72,7 @@ class AirlineServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetFreeSeats(self, request, context):
+    def GetSeatsAvailable(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -101,12 +96,6 @@ class AirlineServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetAllSeats(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_AirlineServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -115,10 +104,10 @@ def add_AirlineServiceServicer_to_server(servicer, server):
                     request_deserializer=airline__service__pb2.AllFlightsRequest.FromString,
                     response_serializer=airline__service__pb2.AllFlightsReply.SerializeToString,
             ),
-            'GetFreeSeats': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetFreeSeats,
-                    request_deserializer=airline__service__pb2.FreeSeatRequest.FromString,
-                    response_serializer=airline__service__pb2.FreeSeatReply.SerializeToString,
+            'GetSeatsAvailable': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSeatsAvailable,
+                    request_deserializer=airline__service__pb2.SeatsAvailableRequest.FromString,
+                    response_serializer=airline__service__pb2.SeatsAvailableReply.SerializeToString,
             ),
             'Reserve': grpc.unary_unary_rpc_method_handler(
                     servicer.Reserve,
@@ -135,11 +124,6 @@ def add_AirlineServiceServicer_to_server(servicer, server):
                     request_deserializer=airline__service__pb2.CancelReserveRequest.FromString,
                     response_serializer=airline__service__pb2.CancelReserveReply.SerializeToString,
             ),
-            'GetAllSeats': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetAllSeats,
-                    request_deserializer=airline__service__pb2.AllSeatsRequest.FromString,
-                    response_serializer=airline__service__pb2.AllSeatsReply.SerializeToString,
-            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'AirlineService', rpc_method_handlers)
@@ -149,7 +133,7 @@ def add_AirlineServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class AirlineService(object):
-    """The greeting service definition.
+    """The Airline Service definition.
     """
 
     @staticmethod
@@ -180,7 +164,7 @@ class AirlineService(object):
             _registered_method=True)
 
     @staticmethod
-    def GetFreeSeats(request,
+    def GetSeatsAvailable(request,
             target,
             options=(),
             channel_credentials=None,
@@ -193,9 +177,9 @@ class AirlineService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/AirlineService/GetFreeSeats',
-            airline__service__pb2.FreeSeatRequest.SerializeToString,
-            airline__service__pb2.FreeSeatReply.FromString,
+            '/AirlineService/GetSeatsAvailable',
+            airline__service__pb2.SeatsAvailableRequest.SerializeToString,
+            airline__service__pb2.SeatsAvailableReply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -277,33 +261,6 @@ class AirlineService(object):
             '/AirlineService/CancelReserve',
             airline__service__pb2.CancelReserveRequest.SerializeToString,
             airline__service__pb2.CancelReserveReply.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetAllSeats(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/AirlineService/GetAllSeats',
-            airline__service__pb2.AllSeatsRequest.SerializeToString,
-            airline__service__pb2.AllSeatsReply.FromString,
             options,
             channel_credentials,
             insecure,

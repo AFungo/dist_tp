@@ -7,8 +7,6 @@ from classes.ticket_service import TicketService
 from networking.airline import airline_service_pb2
 from networking.airline.airline_service_pb2_grpc import AirlineServiceStub
 
-from classes.airport import Airport
-
 from networking.ticket_service.ticket_service_pb2 import BuyFlightPackageReply, FlightsByRouteReply
 from networking.ticket_service.ticket_service_pb2_grpc import TicketServiceServicer, add_TicketServiceServicer_to_server
 from concurrent import futures
@@ -17,7 +15,7 @@ class TicketServiceServicer(TicketServiceServicer):
     """
     Implements the TicketService gRPC service to manage ticket-related operations.
     """
-
+    
     def __init__(self, airline_addresses):
         """
         Initializes the TicketServiceServicer with the given airline addresses.
@@ -33,7 +31,6 @@ class TicketServiceServicer(TicketServiceServicer):
         for address in airline_addresses.values():
             channel = grpc.insecure_channel(address)
             self.airline_clients.append(AirlineServiceStub(channel))
-    
 
     def GetFlightsByRoute(self, request, context):
         """
@@ -49,8 +46,7 @@ class TicketServiceServicer(TicketServiceServicer):
             for flight in airline_flights:
                 for f_id, f_data in flight.items():
                     self.airline_flights[int(f_id)] =  airline
-                    f = Flight(f_id, f_data["src"], f_data["dest"])
-                    f.set_seats_status(f_data["seats"]) 
+                    f = Flight(f_id, f_data["src"], f_data["dest"], f_data["seats"])
                     flights.append(f)
 
         # Use TicketService to find flight packages matching the source and destination.
@@ -64,10 +60,10 @@ class TicketServiceServicer(TicketServiceServicer):
         """
         for i in range(len(request.flights_id)):
             id = request.flights_id[i]
-            seat = request.seat_numbers[i]
+            seats_amount = request.seats_amount[i]
             # Step 1: Attempt to reserve the seat on the flight.
             response = self.airline_flights[id].Reserve(
-                airline_service_pb2.ReserveRequest(flight_id=id, seat_number=seat)
+                airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
             )
             
             # TODO: Check the response to ensure the seat was successfully reserved.

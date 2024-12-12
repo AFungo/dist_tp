@@ -20,12 +20,12 @@ class FlightsByRouteReply(_message.Message):
     def __init__(self, flights: _Optional[str] = ...) -> None: ...
 
 class BuyFlightPackageRequest(_message.Message):
-    __slots__ = ("flights_id", "seat_numbers")
+    __slots__ = ("flights_id", "seats_amount")
     FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
-    SEAT_NUMBERS_FIELD_NUMBER: _ClassVar[int]
+    SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
     flights_id: _containers.RepeatedScalarFieldContainer[int]
-    seat_numbers: _containers.RepeatedScalarFieldContainer[int]
-    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seat_numbers: _Optional[_Iterable[int]] = ...) -> None: ...
+    seats_amount: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[_Iterable[int]] = ...) -> None: ...
 
 class BuyFlightPackageReply(_message.Message):
     __slots__ = ()

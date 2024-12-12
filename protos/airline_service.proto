@@ -1,13 +1,12 @@
 syntax = "proto3";
 
-// The greeting service definition.
+// The Airline Service definition.
 service AirlineService {
   rpc GetAllFlights (AllFlightsRequest) returns (AllFlightsReply){}
-  rpc GetFreeSeats (FreeSeatRequest) returns (FreeSeatReply){}
+  rpc GetSeatsAvailable (SeatsAvailableRequest) returns (SeatsAvailableReply){}
   rpc Reserve (ReserveRequest) returns (ReserveReply){}
   rpc ConfirmReserve (ConfirmReserveRequest) returns (ConfirmReserveReply){}
   rpc CancelReserve (CancelReserveRequest) returns (CancelReserveReply){}
-  rpc GetAllSeats (AllSeatsRequest) returns (AllSeatsReply){}
 }
 
 message AllFlightsRequest{
@@ -18,17 +17,17 @@ message AllFlightsReply{
   string all_flights = 1;
 }
 
-message FreeSeatRequest {
+message SeatsAvailableRequest{
   int32 flight_id = 1;
 }
 
-message FreeSeatReply {
+message SeatsAvailableReply{
   string message = 1;
 }
 
 message ReserveRequest{
   int32 flight_id = 1;
-  int32 seat_number = 2;
+  int32 seats_amount = 2;
 }
 
 message ReserveReply{
@@ -37,7 +36,7 @@ message ReserveReply{
 
 message ConfirmReserveRequest{
   int32 flight_id = 1;
-  int32 seat_number = 2;
+  int32 seats_amount = 2;
 }
 
 message ConfirmReserveReply{
@@ -46,17 +45,9 @@ message ConfirmReserveReply{
 
 message CancelReserveRequest{
   int32 flight_id = 1;
-  int32 seat_number = 2;
+  int32 seats_amount = 2;
 }
 
 message CancelReserveReply{
 
-}
-
-message AllSeatsRequest{
-  int32 flight_id = 1;
-}
-
-message AllSeatsReply{
-  string message = 1;
 }

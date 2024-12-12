@@ -2,7 +2,7 @@ import json
 import logging
 import grpc
 
-from networking.airline.airline_service_pb2 import FreeSeatReply, AllFlightsReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, AllSeatsReply
+from networking.airline.airline_service_pb2 import AllFlightsReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, SeatsAvailableReply
 from networking.airline.airline_service_pb2_grpc import AirlineServiceServicer, add_AirlineServiceServicer_to_server
 from concurrent import futures
 
@@ -19,12 +19,6 @@ class AirlineService(AirlineServiceServicer):
         """
         self.airline = airline
 
-    def GetFreeSeats(self, request, context):
-        """
-        Handles the gRPC request to retrieve the number of free seats for a flight.
-        """        
-        return FreeSeatReply(message=str(self.airline.get_free_seats(request.flight_id)))
-
     def GetAllFlights(self, request, context):
         """
         Handles the gRPC request to retrieve all flights in the airline.
@@ -33,21 +27,21 @@ class AirlineService(AirlineServiceServicer):
         flights = [f.to_dict() for f in flights.values()]
         return AllFlightsReply(all_flights=json.dumps(flights))
 
+    def GetSeatsAvailable(self, request, context):
+        return SeatsAvailableReply(message=str(self.airline.get_seats_available(request.flight_id)))          
+
     def Reserve(self, request, context):
-        self.airline.reserve(request.flight_id, request.seat_number)
+        self.airline.reserve(request.flight_id, request.seats_amount)
         return ReserveReply()
     
     def ConfirmReserve(self, request, context):
-
-        self.airline.confirm_reserve(request.flight_id, request.seat_number)
+        self.airline.confirm_reserve(request.flight_id, request.seats_amount)
         return ConfirmReserveReply()
     
     def CancelReserve(self, request, context):
-        self.airline.cancel_reserve(request.flight_id, request.seat_number)
+        self.airline.cancel_reserve(request.flight_id, request.seats_amount)
         return CancelReserveReply()
     
-    def GetAllSeats(self, request, context):
-        return AllSeatsReply(message=str(self.airline.get_all_seats(request.flight_id)))          
     
 class AirlineServer:
     """
