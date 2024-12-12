@@ -49,8 +49,7 @@ class TicketServiceServicer(TicketServiceServicer):
         # Use TicketService to find flight packages matching the source and destination.
         flight_package = self.ticket_service.get_flights(flights, request.src, request.dest)
         return FlightsByRouteReply(flights=json.dumps(flight_package))
-
-
+    
     def BuyFlightPackage(self, request, context):
         """
         Handles the gRPC request to buy a flight package (multiple flights).
@@ -58,22 +57,11 @@ class TicketServiceServicer(TicketServiceServicer):
         seats_amount = request.seats_amount
 
         for id in request.flights_id:
-            airline_stub = self.airline_flights[id]
-
-            response = airline_stub.Reserve(
-                airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
-            )
-
-            if not response.is_temp_reserved:
-                # manejo de error
+            if not self._reserve(id, seats_amount):
                 return BuyFlightPackageReply(buy_success=False, message="ERROR")
 
-        for id in request.flights_id:        
-            response = airline_stub.ConfirmReserve(
-                airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
-            )
-            if not response.is_reserved:
-                # manejo de error
+        for id in request.flights_id:
+            if not self._confirm_reserve(id, seats_amount):
                 return BuyFlightPackageReply(buy_success=False, message="ERROR")
         
         return BuyFlightPackageReply()
@@ -86,6 +74,22 @@ class TicketServiceServicer(TicketServiceServicer):
             # This step should only be executed if the reservation was successful.
             # TODO: Add the confirm logic here.
 
+    def _reserve(self, id, seats_amount):
+        airline_stub = self.airline_flights[id]
+
+        response = airline_stub.Reserve(
+            airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
+        )
+        return response.is_temp_reserved
+    
+    def _confirm_reserve(self, id, seats_amount):
+        airline_stub = self.airline_flights[id]
+
+        response = airline_stub.ConfirmReserve(
+            airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
+        )
+        return response.is_reserved
+    
 class TicketServiceServer:
     """
     Represents the server that hosts the TicketService gRPC service.
