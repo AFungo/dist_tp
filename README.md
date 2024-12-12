@@ -9,12 +9,12 @@ python3 run_airline_server.py -i resources/airline_file.json
 
 ### Run ticket server:
 ```bash
-python3 run_ticket_server.py -i resources/ticket_service_file.json
+python3 run_ticket_service_server.py -i resources/ticket_service_file.json
 ```
 
 ### Run client:
 ```bash
-python3 run_client.py -a ticket_service_address:port
+python3 client.py -a ticket_service_address:port
 ```
 
 ### Generate protos
