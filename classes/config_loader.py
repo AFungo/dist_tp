@@ -24,7 +24,7 @@ class ConfigLoader:
     def create_airline_server(self):
         data = self.load_config_file()
         flights = {
-            f["id"]: Flight(f["id"], f["src"], f["dest"], f["seats_available"])
+            f["id"]: Flight(f["id"], f["src"], f["dest"], data["name"], f["seats_available"])
             for f in data["flights"]
         }
         airline = Airline(data["name"], flights)

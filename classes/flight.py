@@ -1,5 +1,5 @@
 class Flight:
-    def __init__(self, flight_id: int, src: str, dest: str, seats_amount: int = 1):
+    def __init__(self, flight_id: int, src: str, dest: str, airline: str, seats_amount: int = 1):
         if seats_amount <= 0:
             raise ValueError("The number of seats must be greater than 0.")
         
@@ -8,6 +8,7 @@ class Flight:
         self.dest = dest
         self.seats_available = seats_amount
         self.temporary_reserved_seats = 0
+        self.airline = airline
 
     def are_seats_available(self, seats_amount):
         """
@@ -45,12 +46,12 @@ class Flight:
     
     def to_dict(self):
         return {
-            self.id : {    
-                "src" : self.src,
-                "dest" : self.dest,
-                "seats" : self.get_seats_available()
-            }
+            "id": self.id,    
+            "src" : self.src,
+            "dest" : self.dest,
+            "seats" : self.get_seats_available(),
+            "airline" : self.airline
         }
 
     def __repr__(self) -> str:
-        return f"<Flight {self.id}: {self.src} -> {self.dest}, Seats: {self.seats_available}>"
+        return f"<Flight {self.id}: {self.src} -> {self.dest}, Seats: {self.seats_available}, airline : {self.airline}>"
