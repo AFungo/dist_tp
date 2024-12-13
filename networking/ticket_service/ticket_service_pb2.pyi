@@ -5,6 +5,32 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Optional as _Op
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class VoteRequest(_message.Message):
+    __slots__ = ("flights_id", "seats_amount")
+    FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
+    SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    flights_id: _containers.RepeatedScalarFieldContainer[int]
+    seats_amount: int
+    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ...) -> None: ...
+
+class VoteReply(_message.Message):
+    __slots__ = ("vote", "timestamp")
+    VOTE_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    vote: bool
+    timestamp: int
+    def __init__(self, vote: bool = ..., timestamp: _Optional[int] = ...) -> None: ...
+
+class ConfirmationRequest(_message.Message):
+    __slots__ = ("confirmation",)
+    CONFIRMATION_FIELD_NUMBER: _ClassVar[int]
+    confirmation: str
+    def __init__(self, confirmation: _Optional[str] = ...) -> None: ...
+
+class ConfirmationReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class FlightsByRouteRequest(_message.Message):
     __slots__ = ("src", "dest")
     SRC_FIELD_NUMBER: _ClassVar[int]

@@ -45,6 +45,16 @@ class TicketServiceStub(object):
                 request_serializer=ticket__service__pb2.BuyFlightPackageRequest.SerializeToString,
                 response_deserializer=ticket__service__pb2.BuyFlightPackageReply.FromString,
                 _registered_method=True)
+        self.CallToVote = channel.unary_unary(
+                '/TicketService/CallToVote',
+                request_serializer=ticket__service__pb2.VoteRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.VoteReply.FromString,
+                _registered_method=True)
+        self.SendConfirmation = channel.unary_unary(
+                '/TicketService/SendConfirmation',
+                request_serializer=ticket__service__pb2.ConfirmationRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.ConfirmationReply.FromString,
+                _registered_method=True)
 
 
 class TicketServiceServicer(object):
@@ -63,6 +73,18 @@ class TicketServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def CallToVote(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SendConfirmation(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TicketServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -75,6 +97,16 @@ def add_TicketServiceServicer_to_server(servicer, server):
                     servicer.BuyFlightPackage,
                     request_deserializer=ticket__service__pb2.BuyFlightPackageRequest.FromString,
                     response_serializer=ticket__service__pb2.BuyFlightPackageReply.SerializeToString,
+            ),
+            'CallToVote': grpc.unary_unary_rpc_method_handler(
+                    servicer.CallToVote,
+                    request_deserializer=ticket__service__pb2.VoteRequest.FromString,
+                    response_serializer=ticket__service__pb2.VoteReply.SerializeToString,
+            ),
+            'SendConfirmation': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendConfirmation,
+                    request_deserializer=ticket__service__pb2.ConfirmationRequest.FromString,
+                    response_serializer=ticket__service__pb2.ConfirmationReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -132,6 +164,60 @@ class TicketService(object):
             '/TicketService/BuyFlightPackage',
             ticket__service__pb2.BuyFlightPackageRequest.SerializeToString,
             ticket__service__pb2.BuyFlightPackageReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CallToVote(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/TicketService/CallToVote',
+            ticket__service__pb2.VoteRequest.SerializeToString,
+            ticket__service__pb2.VoteReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SendConfirmation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/TicketService/SendConfirmation',
+            ticket__service__pb2.ConfirmationRequest.SerializeToString,
+            ticket__service__pb2.ConfirmationReply.FromString,
             options,
             channel_credentials,
             insecure,

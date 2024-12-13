@@ -4,6 +4,25 @@ syntax = "proto3";
 service TicketService {
   rpc GetFlightsByRoute (FlightsByRouteRequest) returns (FlightsByRouteReply){}
   rpc BuyFlightPackage (BuyFlightPackageRequest) returns (BuyFlightPackageReply){}
+  rpc CallToVote (VoteRequest) returns (VoteReply) {}
+  rpc SendConfirmation (ConfirmationRequest) returns (ConfirmationReply) {}
+}
+
+message VoteRequest {
+  repeated int32 flights_id = 1;
+  int32 seats_amount = 2;
+}
+
+message VoteReply {
+  bool vote = 1;
+  int32 timestamp = 2;
+}
+
+message ConfirmationRequest{
+  string confirmation = 1;
+}
+
+message ConfirmationReply{
 }
 
 message FlightsByRouteRequest{
