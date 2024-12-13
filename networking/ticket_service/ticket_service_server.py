@@ -1,15 +1,14 @@
+import asyncio
 import json
 import logging
 import grpc
 
-from classes.flight import Flight
 from classes.ticket_service import TicketService
 from networking.airline import airline_service_pb2
 from networking.airline.airline_service_pb2_grpc import AirlineServiceStub
 
 from networking.ticket_service.ticket_service_pb2 import BuyFlightPackageReply, FlightsByRouteReply
 from networking.ticket_service.ticket_service_pb2_grpc import TicketServiceServicer, add_TicketServiceServicer_to_server
-from concurrent import futures
 
 class TicketServiceServicer(TicketServiceServicer):
     """
@@ -29,63 +28,95 @@ class TicketServiceServicer(TicketServiceServicer):
 
         # Create a gRPC channel and stub for each airline address.
         for address in airline_addresses.values():
-            channel = grpc.insecure_channel(address)
+            channel = grpc.aio.insecure_channel(address)
             self.airline_clients.append(AirlineServiceStub(channel))
+        
 
-    def GetFlightsByRoute(self, request, context):
+    async def GetFlightsByRoute(self, request, context):
         """
         Handles the gRPC request to get all flight packages available for a given route.
         """
         flights = []
-        # Retrieve flights from all airline clients.
+        
+        # Retrieve flights from all airline clients asynchronously.
+        tasks = []
         for airline in self.airline_clients:
-            response = airline.GetAllFlights(airline_service_pb2.AllFlightsRequest())
-            airline_flights = json.loads(response.all_flights)
-            # Process each flight and map it to the corresponding airline.
-            for f_data in airline_flights:
-                self.airline_flights[f_data["id"]] = airline
-                flights.append(f_data)
+            tasks.append(self._get_airline_flights(airline, flights))
 
+        airline_responses = await asyncio.gather(*tasks)
+        
         # Use TicketService to find flight packages matching the source and destination.
         flight_package = self.ticket_service.get_flights(flights, request.src, request.dest)
         return FlightsByRouteReply(flights=json.dumps(flight_package))
-    
-    def BuyFlightPackage(self, request, context):
+        
+    async def BuyFlightPackage(self, request, context):
         """
         Handles the gRPC request to buy a flight package (multiple flights).
         """
         seats_amount = request.seats_amount
 
-        for id in request.flights_id:
-            if not self._reserve(id, seats_amount):
-                return BuyFlightPackageReply(buy_success=False, message="ERROR")
+        tasks = []
+        flights = []
+        for airline in self.airline_clients:
+            tasks.append(self._get_airline_flights(airline, flights))
 
+        airline_responses = await asyncio.gather(*tasks)
+
+        tasks = []
+        # Retrieve temporary reservation results asynchronously.
         for id in request.flights_id:
-            if not self._confirm_reserve(id, seats_amount):
-                return BuyFlightPackageReply(buy_success=False, message="ERROR")
+            tasks.append(self._reserve(id, seats_amount))
+
+        reserve_results = await asyncio.gather(*tasks)
+
+        # Check if all temporary reservations were successful
+        if not all(reserve_results):
+            return BuyFlightPackageReply(buy_success=False, message="ERROR")
+
+        # Retrieve confirmation results asynchronously.
+        tasks = []
+        for id in request.flights_id:
+            tasks.append(self._confirm_reserve(id, seats_amount))
+
+        confirm_results = await asyncio.gather(*tasks)
+
+        # Check if all reservations were confirmed successfully
+        if not all(confirm_results):
+            return BuyFlightPackageReply(buy_success=False, message="ERROR")
         
         return BuyFlightPackageReply()
 
-            # TODO: Check the response to ensure the seat was successfully reserved.
-            # If successful, proceed to confirm the reservation.
-            # If reservation fails, inform the user and handle rollback.
+    # TODO: Check the response to ensure the seat was successfully reserved.
+    # If successful, proceed to confirm the reservation.
+    # If reservation fails, inform the user and handle rollback.
 
-            # Step 2: Confirm the reservation, officially marking the seat as purchased.
-            # This step should only be executed if the reservation was successful.
-            # TODO: Add the confirm logic here.
+    # Step 2: Confirm the reservation, officially marking the seat as purchased.
+    # This step should only be executed if the reservation was successful.
+    # TODO: Add the confirm logic here.
 
-    def _reserve(self, id, seats_amount):
+    async def _get_airline_flights(self, airline, flights):
+        """
+        Helper function to fetch flights from a specific airline asynchronously.
+        """
+        response = await airline.GetAllFlights(airline_service_pb2.AllFlightsRequest())
+        airline_flights = json.loads(response.all_flights)
+        
+        # Process each flight and map it to the corresponding airline.
+        for flight in airline_flights:
+            self.airline_flights[flight["id"]] = airline
+            flights.append(flight)
+        return airline_flights
+
+    async def _reserve(self, id, seats_amount):
         airline_stub = self.airline_flights[id]
-
-        response = airline_stub.Reserve(
+        response = await airline_stub.Reserve(
             airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
         )
         return response.is_temp_reserved
     
-    def _confirm_reserve(self, id, seats_amount):
+    async def _confirm_reserve(self, id, seats_amount):
         airline_stub = self.airline_flights[id]
-
-        response = airline_stub.ConfirmReserve(
+        response = await airline_stub.ConfirmReserve(
             airline_service_pb2.ReserveRequest(flight_id=id, seats_amount=seats_amount)
         )
         return response.is_reserved
@@ -104,15 +135,15 @@ class TicketServiceServer:
         """
         self.port = port
         self.airline_addresses = airline_addresses
-        self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        self.server = grpc.aio.server()
         
-    def start(self):
+    async def start(self):
         """
         Start the gRPC server, register the TicketService, and begin listening for requests.
         """
         logging.basicConfig()
-        add_TicketServiceServicer_to_server(TicketServiceServicer(self.airline_addresses), self.server)
+        add_TicketServiceServicer_to_server(TicketServiceServicer(self.airline_addresses), self.server)        
         self.server.add_insecure_port("[::]:" + self.port)
-        self.server.start()
+        await self.server.start()
         print("Server started, listening on " + self.port)
-        self.server.wait_for_termination()    
+        await self.server.wait_for_termination()    
