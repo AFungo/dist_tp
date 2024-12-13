@@ -4,7 +4,6 @@ import grpc
 
 from networking.airline.airline_service_pb2 import AllFlightsReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, SeatsAvailableReply
 from networking.airline.airline_service_pb2_grpc import AirlineServiceServicer, add_AirlineServiceServicer_to_server
-from concurrent import futures
 
 class AirlineService(AirlineServiceServicer):
     """
@@ -19,7 +18,7 @@ class AirlineService(AirlineServiceServicer):
         """
         self.airline = airline
 
-    def GetAllFlights(self, request, context):
+    async def GetAllFlights(self, request, context):
         """
         Handles the gRPC request to retrieve all flights in the airline.
         """
@@ -27,18 +26,18 @@ class AirlineService(AirlineServiceServicer):
         flights = [f.to_dict() for f in flights.values()]
         return AllFlightsReply(all_flights=json.dumps(flights))
 
-    def GetSeatsAvailable(self, request, context):
+    async def GetSeatsAvailable(self, request, context):
         return SeatsAvailableReply(message=str(self.airline.get_seats_available(request.flight_id)))          
 
-    def Reserve(self, request, context):
+    async def Reserve(self, request, context):
         is_temp_reserved = self.airline.reserve(request.flight_id, request.seats_amount)
         return ReserveReply(is_temp_reserved=is_temp_reserved)
     
-    def ConfirmReserve(self, request, context):
+    async def ConfirmReserve(self, request, context):
         is_reserved = self.airline.confirm_reserve(request.flight_id, request.seats_amount)
         return ConfirmReserveReply(is_reserved=is_reserved)
     
-    def CancelReserve(self, request, context):
+    async def CancelReserve(self, request, context):
         self.airline.cancel_reserve(request.flight_id, request.seats_amount)
         return CancelReserveReply()
     
@@ -56,16 +55,16 @@ class AirlineServer:
         """
         self.airline = airline
         self.port = port
-        self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        self.server = grpc.aio.server()
 
-    def start(self):
+    async def start(self):
         """
         Start the gRPC server, register the AirlineService, and begin listening for requests.
         """
         logging.basicConfig()
         add_AirlineServiceServicer_to_server(AirlineService(self.airline), self.server)
         self.server.add_insecure_port("[::]:" + self.port)
-        self.server.start()
+        await self.server.start()
         print("Server started, listening on " + self.port)
-        self.server.wait_for_termination()
+        await self.server.wait_for_termination()
         
