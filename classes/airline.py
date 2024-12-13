@@ -67,7 +67,7 @@ class Airline:
         :param flight_id: The ID of the flight.
         :return: A list of all seats for the flight.
         """
-        return self.flight[flight_id].get_seats_available()        
+        return self.flights[flight_id].get_seats_available()        
     
     def __repr__(self):
         """
