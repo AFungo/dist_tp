@@ -14,7 +14,7 @@ class TicketServiceServicer(TicketServiceServicer):
     Implements the TicketService gRPC service to manage ticket-related operations.
     """
 
-    def __init__(self, airline_addresses):
+    def __init__(self):
         """
         Initializes the TicketServiceServicer with the given airline addresses.
 
@@ -22,17 +22,14 @@ class TicketServiceServicer(TicketServiceServicer):
         """
         self.ticket_service = TicketService()
         self.neighbor_clients = []
-        self.airline_clients = self._create_airline_clients(airline_addresses)
+        self.airline_clients = []
         self.airline_flights = {}
 
-    def _create_airline_clients(self, airline_addresses):
-        """
-        Creates gRPC clients for each airline address.
-        :param airline_addresses: A dictionary of airline names and their gRPC addresses.
-        :return: A list of AirlineServiceStub clients.
-        """
-        return [AirlineServiceStub(grpc.aio.insecure_channel(address)) for address in airline_addresses.values()]
 
+
+    def add_airline_clients(self, airline_clients):
+        self.airline_clients = airline_clients
+    
     def add_neighbor_clients(self, neighbor_clients):
         self.neighbor_clients = neighbor_clients
 
@@ -131,13 +128,13 @@ class TicketServiceServer:
         """
         logging.basicConfig()
 
-        ticket_service = TicketServiceServicer(self.airline_addresses)
+        ticket_service = TicketServiceServicer()
         add_TicketServiceServicer_to_server(ticket_service, self.server)
         self.server.add_insecure_port(f"[::]:{self.port}")
         await self.server.start()
 
+        ticket_service.add_airline_clients(await self._create_airline_clients(self.airline_addresses))
         ticket_service.add_neighbor_clients(await self._create_neighbor_clients())
-
         print(f"Server started, listening on {self.port}")
         await self.server.wait_for_termination()
 
@@ -170,3 +167,11 @@ class TicketServiceServer:
         """
         tasks = [self._create_neighbor_stub_with_retries(address) for address in self.neighbor_addresses]
         return await asyncio.gather(*tasks, return_exceptions=True)
+
+    async def _create_airline_clients(self, airline_addresses):
+        """
+        Creates gRPC clients for each airline address.
+        :param airline_addresses: A dictionary of airline names and their gRPC addresses.
+        :return: A list of AirlineServiceStub clients.
+        """
+        return [AirlineServiceStub(grpc.aio.insecure_channel(address)) for address in airline_addresses.values()]
