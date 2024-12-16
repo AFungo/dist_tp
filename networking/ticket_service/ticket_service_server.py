@@ -6,7 +6,7 @@ import grpc
 from classes.ticket_service import TicketService
 from networking.airline import airline_service_pb2
 from networking.airline.airline_service_pb2_grpc import AirlineServiceStub
-from networking.ticket_service.ticket_service_pb2 import BuyFlightPackageReply, FlightsByRouteReply, VoteReply, VoteRequest, ConfirmationRequest
+from networking.ticket_service.ticket_service_pb2 import AbortReply, AbortRequest, BuyFlightPackageReply, CommitReply, CommitRequest, FlightsByRouteReply, VoteReply, VoteRequest
 from networking.ticket_service.ticket_service_pb2_grpc import TicketServiceServicer, TicketServiceStub, add_TicketServiceServicer_to_server
 from networking.utils.lamport_clock import LamportClock
 from networking.utils.node_log import NodeLog
@@ -50,26 +50,40 @@ class TicketServiceServicer(TicketServiceServicer):
         
         await self._fetch_all_flights()
         
-        vote_results = await self._call_neighbors_to_vote(request.flights_id)
+        vote_results = await self._call_neighbors_to_vote(request.flights_id, request.seats_amount)
         
-        if all(vote_results):
-            reserve_results = await self._process_reservations(request.flights_id, request.seats_amount, self._reserve)
-            if not all(reserve_results):
-                tasks = []
-                for neighbor in self.neighbor_clients:
-                    tasks.append(neighbor.SendConfirmation(ConfirmationRequest(confirmation=False)))
-                await asyncio.gather(*tasks)
-                
-                return BuyFlightPackageReply(buy_success=False, message="ERROR")
-      
-        await self._commit_to_neighbors(request.flights_id, request.seats_amount)
+        if not all(vote_results):
+            return BuyFlightPackageReply(buy_success=False, message="ERROR: Failed to get aprove from neighbors")
+
+        reserve_results = await self._process_reservations(request.flights_id, request.seats_amount, self._reserve)
+
+        if not all([request.is_temp_reserved for request in reserve_results]):
+            await self._abort_to_neighbors()
+            flights_id = [request.flight_id for request in reserve_results if request.is_temp_reserved]
+            await self._cancel_reserve(flights_id, request.seats_amount)
+            return BuyFlightPackageReply(buy_success=False, message="ERROR: can't reserve all the flights")
         
+        await self._process_reservations(request.flights_id, request.seats_amount, self._confirm_reserve)
+        # # Este caso, según Marcelo no debería pasar.
+        # if not all(confirm_results):
+        #     return BuyFlightPackageReply(buy_success=False, message="ERROR")
+        
+        await self._commit_to_neighbors()
         return BuyFlightPackageReply()
     
+    async def _cancel_reserve(self, flights_id, seats_amount):
+        tasks = []
+        for flight_id in flights_id:
+            airline_stub = self.airline_flights[flight_id]
+            tasks.append(airline_stub.CancelReserve(
+                airline_service_pb2.CancelReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
+                ))
+        await asyncio.gather(*tasks)
+
     async def _call_neighbors_to_vote(self, flights_id, seats_amount):
         tasks = [
             asyncio.wait_for(
-                neighbor.CallToVote(VoteRequest(flights_id=flights_id, seats_amount=seats_amount)),
+                neighbor.Vote(VoteRequest(flights_id=flights_id, seats_amount=seats_amount)),
                 timeout=5
             )
             for neighbor in self.neighbor_clients
@@ -77,38 +91,18 @@ class TicketServiceServicer(TicketServiceServicer):
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         return [response.vote if isinstance(response, VoteReply) else False for response in responses]
     
-    async def _commit_to_neighbors(self, flights_id, seats_amount):
-        confirm_results = await self._process_reservations(flights_id, seats_amount, self._confirm_reserve)
-        
-        # Este caso, según Marcelo no debería pasar.
-        if not all(confirm_results):
-            return BuyFlightPackageReply(buy_success=False, message="ERROR")
-        
+    async def _commit_to_neighbors(self):        
         tasks = []        
         for neighbor in self.neighbor_clients:
-            tasks.append(neighbor.SendConfirmation(ConfirmationRequest(confirmation=True)))
-        
+            tasks.append(neighbor.Commit(CommitRequest()))
         await asyncio.gather(*tasks)    
                 
-    async def CallToVote(self, request, context):
-        self.lamport_clock.increment() 
+    async def _abort_to_neighbors(self):
+        tasks = []        
+        for neighbor in self.neighbor_clients:
+            tasks.append(neighbor.Abort(AbortRequest()))        
+        await asyncio.gather(*tasks)
 
-        if self.log.get_conflicting_entries(request.flights_id):
-            return VoteReply(vote=False)
-
-        self.log.add_entry(
-            transaction_id=request.transaction_id,
-            flights_id=request.flights_id,
-            seats_amount=request.seats_amount,
-            status="pending"
-        )
-
-        return VoteReply(vote=True, timestamp=self.lamport_clock.get_time())
-        
-    
-    async def SendConfirmation(self, request, context):
-        
-        pass        
 
     async def _fetch_all_flights(self):
         """
@@ -147,14 +141,34 @@ class TicketServiceServicer(TicketServiceServicer):
         response = await airline_stub.Reserve(
             airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
         )
-        return response.is_temp_reserved
+        return response
 
     async def _confirm_reserve(self, flight_id, seats_amount):
         airline_stub = self.airline_flights[flight_id]
         response = await airline_stub.ConfirmReserve(
             airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
         )
-        return response.is_reserved
+        return response
+    
+    #Coordinator
+    async def Vote(self, request, context):
+        """
+        Handles Prepare phase requests.
+        """
+        return VoteReply(vote=True)#true is vote-commit
+
+
+    async def Commit(self, request, context):
+        """
+        Handles Commit phase requests.
+        """
+        return CommitReply()
+
+
+    async def Abort(self, request, context):
+        return AbortReply()
+
+
 
 class TicketServiceServer:
     """

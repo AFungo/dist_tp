@@ -31,11 +31,11 @@ class AirlineService(AirlineServiceServicer):
 
     async def Reserve(self, request, context):
         is_temp_reserved = self.airline.reserve(request.flight_id, request.seats_amount)
-        return ReserveReply(is_temp_reserved=is_temp_reserved)
+        return ReserveReply(flight_id=request.flight_id, is_temp_reserved=is_temp_reserved)
     
     async def ConfirmReserve(self, request, context):
         is_reserved = self.airline.confirm_reserve(request.flight_id, request.seats_amount)
-        return ConfirmReserveReply(is_reserved=is_reserved)
+        return ConfirmReserveReply(flight_id=request.flight_id, is_reserved=is_reserved)
     
     async def CancelReserve(self, request, context):
         self.airline.cancel_reserve(request.flight_id, request.seats_amount)

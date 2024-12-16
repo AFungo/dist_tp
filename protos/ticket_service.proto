@@ -4,8 +4,9 @@ syntax = "proto3";
 service TicketService {
   rpc GetFlightsByRoute (FlightsByRouteRequest) returns (FlightsByRouteReply){}
   rpc BuyFlightPackage (BuyFlightPackageRequest) returns (BuyFlightPackageReply){}
-  rpc CallToVote (VoteRequest) returns (VoteReply) {}
-  rpc SendConfirmation (ConfirmationRequest) returns (ConfirmationReply) {}
+  rpc Vote (VoteRequest) returns (VoteReply) {}
+  rpc Commit (CommitRequest) returns (CommitReply) {}
+  rpc Abort (AbortRequest) returns (AbortReply) {}
 }
 
 message VoteRequest {
@@ -18,11 +19,16 @@ message VoteReply {
   int32 timestamp = 2;
 }
 
-message ConfirmationRequest{
-  string confirmation = 1;
+message CommitRequest{
 }
 
-message ConfirmationReply{
+message CommitReply{
+}
+
+message AbortRequest{
+}
+
+message AbortReply{
 }
 
 message FlightsByRouteRequest{

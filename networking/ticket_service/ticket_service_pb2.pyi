@@ -21,13 +21,19 @@ class VoteReply(_message.Message):
     timestamp: int
     def __init__(self, vote: bool = ..., timestamp: _Optional[int] = ...) -> None: ...
 
-class ConfirmationRequest(_message.Message):
-    __slots__ = ("confirmation",)
-    CONFIRMATION_FIELD_NUMBER: _ClassVar[int]
-    confirmation: str
-    def __init__(self, confirmation: _Optional[str] = ...) -> None: ...
+class CommitRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
-class ConfirmationReply(_message.Message):
+class CommitReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class AbortRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class AbortReply(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 

@@ -19,21 +19,12 @@ async def main():
     async with grpc.aio.insecure_channel(address) as channel:
         stub = networking.ticket_service.ticket_service_pb2_grpc.TicketServiceStub(channel)
         
-        tasks = []
-        tasks.append(get_flights(stub, "RCU", "AEP"))
-        tasks.append(buy_flight(stub, [1], 1))
-        tasks.append(buy_flight(stub, [1], 1))
-        tasks.append(buy_flight(stub, [2], 1))
-        tasks.append(buy_flight(stub, [2], 1))
-        tasks.append(buy_flight(stub, [3], 1))
-        tasks.append(buy_flight(stub, [4], 1))
-        tasks.append(buy_flight(stub, [5], 1))
-        
-        confirm_results = await asyncio.gather(*tasks)
-        
-        tasks = []
-        tasks.append(get_flights(stub, "RCU", "AEP"))
-        confirm_results = await asyncio.gather(*tasks)
+        await buy_flight(stub, [1], 1)
+        await get_flights(stub, "RCU", "AEP")
+        await buy_flight(stub, [1,2], 1)
+        await get_flights(stub, "RCU", "AEP")
+        await buy_flight(stub, [1,2], 1)
+        await get_flights(stub, "RCU", "AEP")
         
         print("Ya terminaron de comprarse")
         
