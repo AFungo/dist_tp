@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+from time import sleep
 import grpc
 
 from classes.ticket_service import TicketService
@@ -26,7 +27,7 @@ class TicketServiceServicer(TicketServiceServicer):
         self.neighbor_clients = []
         self.airline_clients = []
         self.airline_flights = {}
-        self.log = NodeLog()
+        self.logs = []
         self.clock = LamportClock()
 
     def add_airline_clients(self, airline_clients):
@@ -50,14 +51,19 @@ class TicketServiceServicer(TicketServiceServicer):
         
         await self._fetch_all_flights()
         
+        log = NodeLog(request.flights_id, request.seats_amount)
+        self.logs.append(log)
+        
         vote_results = await self._call_neighbors_to_vote(request.flights_id, request.seats_amount)
         
         if not all(vote_results):
+            log.set_status_aborted()
             return BuyFlightPackageReply(buy_success=False, message="ERROR: Failed to get aprove from neighbors")
 
         reserve_results = await self._process_reservations(request.flights_id, request.seats_amount, self._reserve)
 
         if not all([request.is_temp_reserved for request in reserve_results]):
+            log.set_status_aborted()
             await self._abort_to_neighbors()
             flights_id = [request.flight_id for request in reserve_results if request.is_temp_reserved]
             await self._cancel_reserve(flights_id, request.seats_amount)
@@ -69,6 +75,7 @@ class TicketServiceServicer(TicketServiceServicer):
         #     return BuyFlightPackageReply(buy_success=False, message="ERROR")
         
         await self._commit_to_neighbors()
+        log.set_status_committed()
         return BuyFlightPackageReply()
     
     async def _cancel_reserve(self, flights_id, seats_amount):
@@ -155,8 +162,18 @@ class TicketServiceServicer(TicketServiceServicer):
         """
         Handles Prepare phase requests.
         """
-        return VoteReply(vote=True)#true is vote-commit
-
+        if self._can_reserve(request.flights_id, request.seats_amount):
+            return VoteReply(vote=True) #true is vote-commit
+        else:
+            print(self)
+            return VoteReply(vote=False)
+            
+    def _can_reserve(self, flights_id, seats_amount):
+        # Filter logs with 'pending' status
+        pending_logs = (log for log in self.logs if log.is_pending())
+        
+        # Check if any consulting_id overlaps with flights_id in the pending logs
+        return not any(id in log.flights_id for log in pending_logs for id in flights_id)
 
     async def Commit(self, request, context):
         """

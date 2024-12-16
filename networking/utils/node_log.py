@@ -1,20 +1,25 @@
+from enum import Enum
+
+class LogStatus(Enum):
+    PENDING = "PENDING"
+    COMMITTED = "COMMITTED"
+    ABORTED = "ABORTED"
+    
 class NodeLog:
-    def __init__(self):
-        self.log = []  # operations
-
-    def add_entry(self, transaction_id, flights_id, seats_amount, status):
-        """
-        Add an entry to the log.
-        """
-        self.log.append({
-            "transaction_id": transaction_id,
-            "flights_id": flights_id,
-            "seats_amount": seats_amount,
-            "status": status  # "pending", "committed", "aborted"
-        })
-
-    def get_conflicting_entries(self, flights_id):
-        """
-        Check for conflicting entries in the log.
-        """
-        return [entry for entry in self.log if flights_id in entry["flights_id"] and entry["status"] == "committed"]
+    def __init__(self, flights_id, seats_amount):
+        self.flights_id = flights_id
+        self.seats_amount = seats_amount
+        self.status = LogStatus.PENDING
+        
+    def is_pending(self):
+        return self.status == LogStatus.PENDING
+                
+    def set_status_pending(self):
+        self.status = LogStatus.PENDING
+        
+    def set_status_committed(self):
+        self.status = LogStatus.COMMITTED
+        
+    def set_status_aborted(self):
+        self.status = LogStatus.ABORTED
+        
