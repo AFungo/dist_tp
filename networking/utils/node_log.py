@@ -6,10 +6,11 @@ class LogStatus(Enum):
     ABORTED = "ABORTED"
     
 class NodeLog:
-    def __init__(self, flights_id, seats_amount):
+    def __init__(self, flights_id, seats_amount, timestamp):
         self.flights_id = flights_id
         self.seats_amount = seats_amount
         self.status = LogStatus.PENDING
+        self.timestamp = timestamp
         
     def is_pending(self):
         return self.status == LogStatus.PENDING

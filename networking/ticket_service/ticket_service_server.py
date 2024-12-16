@@ -1,7 +1,6 @@
 import asyncio
 import json
 import logging
-from time import sleep
 import grpc
 
 from classes.ticket_service import TicketService
@@ -51,7 +50,7 @@ class TicketServiceServicer(TicketServiceServicer):
         
         await self._fetch_all_flights()
         
-        log = NodeLog(request.flights_id, request.seats_amount)
+        log = NodeLog(request.flights_id, request.seats_amount, self.clock.get_time())
         self.logs.append(log)
         
         vote_results = await self._call_neighbors_to_vote(request.flights_id, request.seats_amount)
@@ -70,9 +69,6 @@ class TicketServiceServicer(TicketServiceServicer):
             return BuyFlightPackageReply(buy_success=False, message="ERROR: can't reserve all the flights")
         
         await self._process_reservations(request.flights_id, request.seats_amount, self._confirm_reserve)
-        # # Este caso, según Marcelo no debería pasar.
-        # if not all(confirm_results):
-        #     return BuyFlightPackageReply(buy_success=False, message="ERROR")
         
         await self._commit_to_neighbors()
         log.set_status_committed()
@@ -88,9 +84,10 @@ class TicketServiceServicer(TicketServiceServicer):
         await asyncio.gather(*tasks)
 
     async def _call_neighbors_to_vote(self, flights_id, seats_amount):
+        self.clock.increment()
         tasks = [
             asyncio.wait_for(
-                neighbor.Vote(VoteRequest(flights_id=flights_id, seats_amount=seats_amount)),
+                neighbor.Vote(VoteRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())),
                 timeout=5
             )
             for neighbor in self.neighbor_clients
@@ -98,18 +95,19 @@ class TicketServiceServicer(TicketServiceServicer):
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         return [response.vote if isinstance(response, VoteReply) else False for response in responses]
     
-    async def _commit_to_neighbors(self):        
+    async def _commit_to_neighbors(self):
+        self.clock.increment()        
         tasks = []        
         for neighbor in self.neighbor_clients:
-            tasks.append(neighbor.Commit(CommitRequest()))
+            tasks.append(neighbor.Commit(CommitRequest(timestamp=self.clock.get_time())))
         await asyncio.gather(*tasks)    
                 
     async def _abort_to_neighbors(self):
+        self.clock.increment()
         tasks = []        
         for neighbor in self.neighbor_clients:
-            tasks.append(neighbor.Abort(AbortRequest()))        
+            tasks.append(neighbor.Abort(AbortRequest(timestamp=self.clock.get_time())))        
         await asyncio.gather(*tasks)
-
 
     async def _fetch_all_flights(self):
         """
@@ -162,29 +160,32 @@ class TicketServiceServicer(TicketServiceServicer):
         """
         Handles Prepare phase requests.
         """
-        if self._can_reserve(request.flights_id, request.seats_amount):
+        if self._can_reserve(request.flights_id, request.timestamp):
+            self.clock.update(request.timestamp)
             return VoteReply(vote=True) #true is vote-commit
         else:
-            print(self)
             return VoteReply(vote=False)
             
-    def _can_reserve(self, flights_id, seats_amount):
+    def _can_reserve(self, flights_id, timestamp):
         # Filter logs with 'pending' status
         pending_logs = (log for log in self.logs if log.is_pending())
         
-        # Check if any consulting_id overlaps with flights_id in the pending logs
-        return not any(id in log.flights_id for log in pending_logs for id in flights_id)
+        return not any(
+            log.timestamp < timestamp and any(id in flights_id for id in log.flights_id)
+            for log in pending_logs
+        )
 
     async def Commit(self, request, context):
         """
         Handles Commit phase requests.
         """
+        self.clock.update(request.timestamp)
         return CommitReply()
 
 
     async def Abort(self, request, context):
+        self.clock.update(request.timestamp)
         return AbortReply()
-
 
 
 class TicketServiceServer:

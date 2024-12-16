@@ -6,7 +6,7 @@ class LamportClock:
         self.time += 1
 
     def update(self, received_time):
-        self.time = max(self.time, received_time) + 1
+        self.time = max(self.time + 1, received_time)
 
     def get_time(self):
         return self.time
