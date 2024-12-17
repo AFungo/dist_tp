@@ -3,7 +3,6 @@ from enum import Enum
 class LogStatus(Enum):
     PENDING = "PENDING"
     COMMITTED = "COMMITTED"
-    ABORTED = "ABORTED"
     
 class NodeLog:
     def __init__(self, flights_id, seats_amount, timestamp):
@@ -20,7 +19,3 @@ class NodeLog:
         
     def set_status_committed(self):
         self.status = LogStatus.COMMITTED
-        
-    def set_status_aborted(self):
-        self.status = LogStatus.ABORTED
-        

@@ -27,7 +27,7 @@ class AirlineService(AirlineServiceServicer):
         return AllFlightsReply(all_flights=json.dumps(flights))
 
     async def GetSeatsAvailable(self, request, context):
-        return SeatsAvailableReply(message=str(self.airline.get_seats_available(request.flight_id)))          
+        return SeatsAvailableReply(seats_available=self.airline.get_seats_available(request.flight_id))          
 
     async def Reserve(self, request, context):
         is_temp_reserved = self.airline.reserve(request.flight_id, request.seats_amount)
