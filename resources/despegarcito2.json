@@ -4,5 +4,6 @@
         "LATAM Airlines": "localhost:5001",
         "Aerolíneas Argentinas": "localhost:5000"
     },
-    "neighbor_addresses": ["localhost:8001"]
+    "neighbor_addresses": ["localhost:8001"],
+    "id": 2
 }
