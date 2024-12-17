@@ -21,10 +21,10 @@ class SeatsAvailableRequest(_message.Message):
     def __init__(self, flight_id: _Optional[int] = ...) -> None: ...
 
 class SeatsAvailableReply(_message.Message):
-    __slots__ = ("message",)
-    MESSAGE_FIELD_NUMBER: _ClassVar[int]
-    message: str
-    def __init__(self, message: _Optional[str] = ...) -> None: ...
+    __slots__ = ("seats_available",)
+    SEATS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
+    seats_available: int
+    def __init__(self, seats_available: _Optional[int] = ...) -> None: ...
 
 class ReserveRequest(_message.Message):
     __slots__ = ("flight_id", "seats_amount")

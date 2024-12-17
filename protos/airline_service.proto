@@ -22,7 +22,7 @@ message SeatsAvailableRequest{
 }
 
 message SeatsAvailableReply{
-  string message = 1;
+  int32 seats_available = 1;
 }
 
 message ReserveRequest{

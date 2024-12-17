@@ -13,6 +13,7 @@ message VoteRequest {
   repeated int32 flights_id = 1;
   int32 seats_amount = 2;
   int32 timestamp = 3;
+  int32 neighbor_id = 4;
 }
 
 message VoteReply {
@@ -20,14 +21,18 @@ message VoteReply {
 }
 
 message CommitRequest{
-  int32 timestamp = 1;
+  repeated int32 flights_id = 1;
+  int32 seats_amount = 2;
+  int32 timestamp = 3;
 }
 
 message CommitReply{
 }
 
 message AbortRequest{
-  int32 timestamp = 1;
+  repeated int32 flights_id = 1;
+  int32 seats_amount = 2;
+  int32 timestamp = 3;
 }
 
 message AbortReply{
