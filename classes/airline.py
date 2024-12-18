@@ -5,6 +5,12 @@ class Airport(Enum):
     EZE = "EZE"
     RCU = "RCU"
     GDZ = "GDZ"
+    MAD = "MAD"
+    NYC = "NYC"
+    COR = "COR"
+    DXB = "DXB"
+    SCL = "SCL"
+    SAO = "SAO"
 
 class Airline:
     """

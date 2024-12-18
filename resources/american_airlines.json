@@ -1,0 +1,42 @@
+{
+    "name": "American Airlines",
+    "flights": [
+        {
+            "src": "NYC",
+            "dest": "MAD",  
+            "seats_available": 15,
+            "id": 0
+        },
+        {
+            "src": "MAD",
+            "dest": "NYC",  
+            "seats_available": 15,
+            "id": 1
+        },
+        {
+            "src": "NYC",
+            "dest": "SAO",
+            "seats_available": 15,
+            "id": 2
+        },
+        {
+            "src": "SAO",
+            "dest": "NYC",
+            "seats_available": 15,
+            "id": 3
+        },
+        {
+            "src": "MAD",
+            "dest": "AEP",
+            "seats_available": 15,
+            "id": 4
+        },
+        {
+            "src": "AEP",
+            "dest": "MAD",
+            "seats_available": 15,
+            "id": 5
+        }
+    ],
+    "port": "5003"
+}
