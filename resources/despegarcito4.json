@@ -1,5 +1,5 @@
 {
-    "port": "8002",
+    "port": "8004",
     "airline_addresses": {
         "Flybondi": "localhost:5004",
         "American Airlines": "localhost:5003",
@@ -7,6 +7,6 @@
         "LATAM Airlines": "localhost:5001",
         "Aerolíneas Argentinas": "localhost:5000"
     },
-    "neighbor_addresses":["localhost:8001", "localhost:8003", "localhost:8004"],
-    "id": 2
+    "neighbor_addresses":["localhost:8001", "localhost:8002", "localhost:8003"],
+    "id": 4
 }
