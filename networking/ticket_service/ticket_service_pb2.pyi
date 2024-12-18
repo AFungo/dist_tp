@@ -23,7 +23,7 @@ class VoteReply(_message.Message):
     vote: bool
     def __init__(self, vote: bool = ...) -> None: ...
 
-class CommitRequest(_message.Message):
+class PreCommitRequest(_message.Message):
     __slots__ = ("flights_id", "seats_amount", "timestamp")
     FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
     SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
@@ -32,6 +32,16 @@ class CommitRequest(_message.Message):
     seats_amount: int
     timestamp: int
     def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ..., timestamp: _Optional[int] = ...) -> None: ...
+
+class PreCommitReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class CommitRequest(_message.Message):
+    __slots__ = ("timestamp",)
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    timestamp: int
+    def __init__(self, timestamp: _Optional[int] = ...) -> None: ...
 
 class CommitReply(_message.Message):
     __slots__ = ()
@@ -48,6 +58,14 @@ class AbortRequest(_message.Message):
     def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ..., timestamp: _Optional[int] = ...) -> None: ...
 
 class AbortReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class AbortPreCommitRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class AbortPreCommitReply(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 

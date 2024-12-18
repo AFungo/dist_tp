@@ -50,6 +50,11 @@ class TicketServiceStub(object):
                 request_serializer=ticket__service__pb2.VoteRequest.SerializeToString,
                 response_deserializer=ticket__service__pb2.VoteReply.FromString,
                 _registered_method=True)
+        self.PreCommit = channel.unary_unary(
+                '/TicketService/PreCommit',
+                request_serializer=ticket__service__pb2.PreCommitRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.PreCommitReply.FromString,
+                _registered_method=True)
         self.Commit = channel.unary_unary(
                 '/TicketService/Commit',
                 request_serializer=ticket__service__pb2.CommitRequest.SerializeToString,
@@ -59,6 +64,11 @@ class TicketServiceStub(object):
                 '/TicketService/Abort',
                 request_serializer=ticket__service__pb2.AbortRequest.SerializeToString,
                 response_deserializer=ticket__service__pb2.AbortReply.FromString,
+                _registered_method=True)
+        self.AbortPreCommit = channel.unary_unary(
+                '/TicketService/AbortPreCommit',
+                request_serializer=ticket__service__pb2.AbortPreCommitRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.AbortPreCommitReply.FromString,
                 _registered_method=True)
 
 
@@ -84,6 +94,12 @@ class TicketServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def PreCommit(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def Commit(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -91,6 +107,12 @@ class TicketServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def Abort(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AbortPreCommit(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -114,6 +136,11 @@ def add_TicketServiceServicer_to_server(servicer, server):
                     request_deserializer=ticket__service__pb2.VoteRequest.FromString,
                     response_serializer=ticket__service__pb2.VoteReply.SerializeToString,
             ),
+            'PreCommit': grpc.unary_unary_rpc_method_handler(
+                    servicer.PreCommit,
+                    request_deserializer=ticket__service__pb2.PreCommitRequest.FromString,
+                    response_serializer=ticket__service__pb2.PreCommitReply.SerializeToString,
+            ),
             'Commit': grpc.unary_unary_rpc_method_handler(
                     servicer.Commit,
                     request_deserializer=ticket__service__pb2.CommitRequest.FromString,
@@ -123,6 +150,11 @@ def add_TicketServiceServicer_to_server(servicer, server):
                     servicer.Abort,
                     request_deserializer=ticket__service__pb2.AbortRequest.FromString,
                     response_serializer=ticket__service__pb2.AbortReply.SerializeToString,
+            ),
+            'AbortPreCommit': grpc.unary_unary_rpc_method_handler(
+                    servicer.AbortPreCommit,
+                    request_deserializer=ticket__service__pb2.AbortPreCommitRequest.FromString,
+                    response_serializer=ticket__service__pb2.AbortPreCommitReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -218,6 +250,33 @@ class TicketService(object):
             _registered_method=True)
 
     @staticmethod
+    def PreCommit(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/TicketService/PreCommit',
+            ticket__service__pb2.PreCommitRequest.SerializeToString,
+            ticket__service__pb2.PreCommitReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def Commit(request,
             target,
             options=(),
@@ -261,6 +320,33 @@ class TicketService(object):
             '/TicketService/Abort',
             ticket__service__pb2.AbortRequest.SerializeToString,
             ticket__service__pb2.AbortReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AbortPreCommit(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/TicketService/AbortPreCommit',
+            ticket__service__pb2.AbortPreCommitRequest.SerializeToString,
+            ticket__service__pb2.AbortPreCommitReply.FromString,
             options,
             channel_credentials,
             insecure,
