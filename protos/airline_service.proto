@@ -22,7 +22,7 @@ message SeatsAvailableRequest{
 }
 
 message SeatsAvailableReply{
-  string message = 1;
+  int32 seats_available = 1;
 }
 
 message ReserveRequest{
@@ -31,7 +31,8 @@ message ReserveRequest{
 }
 
 message ReserveReply{
-  bool is_temp_reserved = 1;
+  int32 flight_id = 1;
+  bool is_temp_reserved = 2;
 }
 
 message ConfirmReserveRequest{
@@ -40,7 +41,8 @@ message ConfirmReserveRequest{
 }
 
 message ConfirmReserveReply{
-  bool is_reserved = 1;
+  int32 flight_id = 1;
+  bool is_reserved = 2;
 }
 
 message CancelReserveRequest{

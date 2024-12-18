@@ -5,6 +5,52 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Optional as _Op
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class VoteRequest(_message.Message):
+    __slots__ = ("flights_id", "seats_amount", "timestamp", "neighbor_id")
+    FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
+    SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    NEIGHBOR_ID_FIELD_NUMBER: _ClassVar[int]
+    flights_id: _containers.RepeatedScalarFieldContainer[int]
+    seats_amount: int
+    timestamp: int
+    neighbor_id: int
+    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ..., timestamp: _Optional[int] = ..., neighbor_id: _Optional[int] = ...) -> None: ...
+
+class VoteReply(_message.Message):
+    __slots__ = ("vote",)
+    VOTE_FIELD_NUMBER: _ClassVar[int]
+    vote: bool
+    def __init__(self, vote: bool = ...) -> None: ...
+
+class CommitRequest(_message.Message):
+    __slots__ = ("flights_id", "seats_amount", "timestamp")
+    FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
+    SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    flights_id: _containers.RepeatedScalarFieldContainer[int]
+    seats_amount: int
+    timestamp: int
+    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ..., timestamp: _Optional[int] = ...) -> None: ...
+
+class CommitReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class AbortRequest(_message.Message):
+    __slots__ = ("flights_id", "seats_amount", "timestamp")
+    FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
+    SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
+    flights_id: _containers.RepeatedScalarFieldContainer[int]
+    seats_amount: int
+    timestamp: int
+    def __init__(self, flights_id: _Optional[_Iterable[int]] = ..., seats_amount: _Optional[int] = ..., timestamp: _Optional[int] = ...) -> None: ...
+
+class AbortReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class FlightsByRouteRequest(_message.Message):
     __slots__ = ("src", "dest")
     SRC_FIELD_NUMBER: _ClassVar[int]

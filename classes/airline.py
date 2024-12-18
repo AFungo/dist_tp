@@ -1,3 +1,11 @@
+from enum import Enum
+
+class Airport(Enum):
+    AEP = "AEP"
+    EZE = "EZE"
+    RCU = "RCU"
+    GDZ = "GDZ"
+
 class Airline:
     """
     Represents an airline that manages a collection of flights and seat reservations.
