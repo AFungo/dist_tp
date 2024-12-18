@@ -19,20 +19,13 @@ async def main():
     async with grpc.aio.insecure_channel(address) as channel:
         stub = networking.ticket_service.ticket_service_pb2_grpc.TicketServiceStub(channel)
         
-        await buy_flight(stub, [1], 1)
+        await buy_flight(stub, [3], 1)
         await get_flights(stub, "RCU", "AEP")
-        await buy_flight(stub, [1,2], 1)
-        await get_flights(stub, "RCU", "AEP")
-        await buy_flight(stub, [1,2], 1)
-        await get_flights(stub, "RCU", "AEP")
+        #await get_flights(stub, "RCU", "AEP")
+        #await buy_flight(stub, [1,2], 1)
+        #await get_flights(stub, "RCU", "AEP")
         
-        print("Ya terminaron de comprarse")
-        
-        
-        
-        
-        
-            
+
 async def get_flights(stub, src, dest):
     response = await stub.GetFlightsByRoute(networking.ticket_service.ticket_service_pb2.FlightsByRouteRequest(src=src, dest=dest))
     fs = json.loads(response.flights)
@@ -43,7 +36,8 @@ async def buy_flight(stub, flights_id, seats_amount):
     response = await stub.BuyFlightPackage(networking.ticket_service.ticket_service_pb2.BuyFlightPackageRequest(flights_id=flights_id, seats_amount=seats_amount))
     if(not response.buy_success):
         print(response.message)
-    print(f"VUELOS {flights_id} COMPRADOS")
+    else:  
+        print(f"VUELOS {flights_id} COMPRADOS")
     
 if __name__ == "__main__":
     logging.basicConfig()

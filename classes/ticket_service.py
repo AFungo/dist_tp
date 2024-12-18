@@ -10,7 +10,7 @@ class TicketService:
         :param src: The source location to filter flights.
         :return: A list of flights starting from the given source.
         """
-        return [f for f in flights if f["src"] == src]
+        return [f for f in flights if f["src"] == src and f["seats"] != 0]
     
     def get_flights(self, flights, src, dest):
         """
