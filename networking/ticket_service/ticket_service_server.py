@@ -6,7 +6,7 @@ import grpc
 from classes.ticket_service import TicketService
 from networking.airline import airline_service_pb2
 from networking.airline.airline_service_pb2_grpc import AirlineServiceStub
-from networking.ticket_service.ticket_service_pb2 import AbortPreCommitReply, AbortPreCommitRequest, AbortReply, AbortRequest, BuyFlightPackageReply, CommitReply, CommitRequest, FlightsByRouteReply, PreCommitReply, PreCommitRequest, VoteReply, VoteRequest, TSAllFlightsReply
+from networking.ticket_service.ticket_service_pb2 import AbortTransactionReply, AbortTransactionRequest, AbortVotingReply, AbortVotingRequest, BuyFlightPackageReply, CommitReply, CommitRequest, FlightsByRouteReply, PreCommitReply, PreCommitRequest, VoteReply, VoteRequest, TSAllFlightsReply
 from networking.ticket_service.ticket_service_pb2_grpc import TicketServiceServicer, TicketServiceStub, add_TicketServiceServicer_to_server
 from networking.utils.lamport_clock import LamportClock
 from networking.utils.node_log import NodeLog
@@ -46,28 +46,35 @@ class TicketServiceServicer(TicketServiceServicer):
         
         log = NodeLog(flights_id, seats_amount, self.clock.get_time())
         self.logs.append(log)
-        
         #Voting phase
-        neighbor_votes = await self._collect_votes(flights_id, seats_amount)
-        if not all(neighbor_votes):
-            return await self._abort_transaction(log, "ERROR: Failed to get aprove from neighbors")
+        if not all(await self._collect_votes(flights_id, seats_amount)):
+            return await self._abort_voting(log, "ERROR: Failed to get aprove from neighbors")
 
         reserve_results = await self._process_reservations(flights_id, seats_amount, self._reserve)
-        
-        if not all(request.is_temp_reserved for request in reserve_results):
+        if not all(request[0] for request in reserve_results):
             flights_to_cancel = [
-                request.flight_id for request in reserve_results if request.is_temp_reserved
+                request[1] for request in reserve_results if request[0]
             ]
             await self._cancel_reserve(flights_to_cancel, seats_amount)
-            return await self._abort_transaction(log, "ERROR: can't reserve all the flights")
+            return await self._abort_voting(log, "ERROR: can't reserve all the flights")
         
         #Pre commiting phase
         if not all(await self._precommit_transaction(flights_id, seats_amount)):
-            return await self._abort_precommit_transaction(log, "ERROR: Failed to precommit")
+            await self._cancel_reserve(flights_id, seats_amount)
+            return await self._abort_transaction(log, "ERROR: Failed to precommit")
         
         #Commiting phase
-        await self._commit_transaction(log, flights_id, seats_amount)
-        return BuyFlightPackageReply(buy_success=True)
+        reserve_results = await self._process_reservations(flights_id, seats_amount, self._confirm_reserve)
+        print(reserve_results)
+        if not all(request[0] for request in reserve_results):
+            flights_to_cancel = [
+                request[1] for request in reserve_results if request[0]
+            ]
+            await self._cancel_purchase(flights_id, seats_amount)
+            return await self._abort_transaction(log, "ERROR: Failed to commit")
+     
+        await self._commit_transaction(log)
+        
         return BuyFlightPackageReply(buy_success=True)
 
     async def Vote(self, request, context):
@@ -80,10 +87,10 @@ class TicketServiceServicer(TicketServiceServicer):
             for flight_id in request.flights_id:
                 self.vote_data.append((flight_id, request.seats_amount))
             
-            return VoteReply(vote=True)     #vote-commit
+            return VoteReply(vote=True)#vote-commit
         
         else:
-            return VoteReply(vote=False)    #vote-abort
+            return VoteReply(vote=False)#vote-abort
 
     async def PreCommit(self, request, context):
         self.clock.update(request.timestamp)
@@ -99,18 +106,18 @@ class TicketServiceServicer(TicketServiceServicer):
     
         return CommitReply()
 
-    async def Abort(self, request, context):
+    async def AbortVoting(self, request, context):
         self.clock.update(request.timestamp)
         
         for flight_id in request.flights_id:
             if (flight_id, request.seats_amount) in self.vote_data:
                 self.vote_data.remove((flight_id, request.seats_amount))
         
-        return AbortReply()
+        return AbortVotingReply()
     
-    async def AbortPreCommit(self, request, context):
+    async def AbortTransaction(self, request, context):
         self.clock.update(request.timestamp)
-        return AbortPreCommitReply()
+        return AbortTransactionReply()
 
     async def _precommit_transaction(self, flights_id, seats_amount):
         self.clock.increment()        
@@ -121,8 +128,7 @@ class TicketServiceServicer(TicketServiceServicer):
         
         return await asyncio.gather(*tasks)
     
-    async def _commit_transaction(self, log, flights_id, seats_amount):
-        await self._process_reservations(flights_id, seats_amount, self._confirm_reserve) 
+    async def _commit_transaction(self, log):
         self.clock.increment()        
        
         tasks = []        
@@ -143,39 +149,49 @@ class TicketServiceServicer(TicketServiceServicer):
             print(f"Absent Neighbor {neighbor} in {operation_name}.")
             if operation_name == "votation":
                 return True
+            if operation_name == "precommit":
+                return True
             pass
 
-    async def _try_to_commit(self, neighbor, flights_id, seats_amount):
-        request = CommitRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
+    async def _try_to_commit(self, neighbor):
+        request = CommitRequest(timestamp=self.clock.get_time())
         return await self._try_operation(neighbor.Commit, neighbor, request, "commit")
 
-    async def _try_to_abort(self, neighbor, flights_id, seats_amount):
-        request = AbortRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
-        return await self._try_operation(neighbor.Abort, neighbor, request, "abort")
+    async def _try_to_precommit(self, neighbor, flights_id, seats_amount):
+        request = PreCommitRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
+        return await self._try_operation(neighbor.PreCommit, neighbor, request, "precommit") 
+    
+    async def _try_to_abort_precommit(self, neighbor):
+        request = AbortTransactionRequest(timestamp=self.clock.get_time())
+        return await self._try_operation(neighbor.AbortTransaction, neighbor, request, "abort_transaction")
+
+    async def _try_to_abort_voting(self, neighbor, flights_id, seats_amount):
+        request = AbortVotingRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
+        return await self._try_operation(neighbor.AbortVoting, neighbor, request, "abort")
 
     async def _try_to_vote(self, neighbor, flights_id, seats_amount):
         request = VoteRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
         return await self._try_operation(neighbor.Vote, neighbor, request, "votation")
     
+    async def _abort_voting(self, log, message):
+        self.logs.remove(log)
+        self.clock.increment()
+        
+        tasks = []        
+        for neighbor in self.neighbor_clients:
+            tasks.append(self._try_to_abort_voting(neighbor, log.flights_id, log.seats_amount))
+        
+        await asyncio.gather(*tasks)
+        return BuyFlightPackageReply(buy_success=False, message=message)
+
     async def _abort_transaction(self, log, message):
         self.logs.remove(log)
         self.clock.increment()
         
         tasks = []        
         for neighbor in self.neighbor_clients:
-            tasks.append(self._try_to_abort(neighbor, log.flights_id, log.seats_amount))
-        
-        await asyncio.gather(*tasks)
-        return BuyFlightPackageReply(buy_success=False, message=message)
-    
-    async def _abort_precommit_transaction(self, log, message):
-        self.logs.remove(log)
-        self.clock.increment()
-        
-        tasks = []        
-        for neighbor in self.neighbor_clients:
             tasks.append(self._try_to_abort_precommit(neighbor))
-        
+
         await asyncio.gather(*tasks)
         return BuyFlightPackageReply(buy_success=False, message=message)
 
@@ -187,7 +203,16 @@ class TicketServiceServicer(TicketServiceServicer):
                 airline_service_pb2.CancelReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
             ))
         await asyncio.gather(*tasks)
-
+    
+    async def _cancel_purchase(self, flights_id, seats_amount):
+        tasks = []
+        for flight_id in flights_id:
+            airline_stub = self.airline_flights[flight_id]
+            tasks.append(airline_stub.CancelPurchase(
+                airline_service_pb2.CancelPurchaseRequest(flight_id=flight_id, seats_amount=seats_amount)
+            ))
+        await asyncio.gather(*tasks)
+    
     async def _collect_votes(self, flights_id, seats_amount):
         self.clock.increment()
         tasks = [
@@ -195,7 +220,6 @@ class TicketServiceServicer(TicketServiceServicer):
             for neighbor in self.neighbor_clients
         ]
         responses = await asyncio.gather(*tasks, return_exceptions=True)
-        print(responses)
         return responses
     
     async def _fetch_all_flights(self):
@@ -213,25 +237,38 @@ class TicketServiceServicer(TicketServiceServicer):
                 flights.append(flight)
 
         except Exception as e:
+            print(e)
             print(f"Airline not found. {airline}")
 
     async def _process_reservations(self, flight_ids, seats_amount, reservation_func):
         tasks = [reservation_func(flight_id, seats_amount) for flight_id in flight_ids]
-        return await asyncio.gather(*tasks)
+        response = await asyncio.gather(*tasks)
+        # print("list",response)
+        return response
 
     async def _reserve(self, flight_id, seats_amount):
-        airline_stub = self.airline_flights[flight_id]
-        response = await airline_stub.Reserve(
-            airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
-        )
-        return response
+        try:
+            airline_stub = self.airline_flights[flight_id]
+            response = await asyncio.wait_for(
+                    airline_stub.Reserve(
+                        airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
+                    ), 5
+            )
+            return (response.is_temp_reserved, response.flight_id)
+        except Exception as e:
+            return (False, flight_id)
 
     async def _confirm_reserve(self, flight_id, seats_amount):
-        airline_stub = self.airline_flights[flight_id]
-        response = await airline_stub.ConfirmReserve(
-            airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
-        )
-        return response
+        try:
+            airline_stub = self.airline_flights[flight_id]
+            response = await asyncio.wait_for(
+                    airline_stub.ConfirmReserve(
+                        airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
+                    ), 5
+            )
+            return (response.is_reserved, response.flight_id)
+        except:
+            return (False, flight_id)
     
     def _intersection(self, ls1, ls2):
         return list(set(ls1).intersection(ls2))

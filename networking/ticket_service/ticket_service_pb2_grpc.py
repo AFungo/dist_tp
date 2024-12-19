@@ -5,7 +5,7 @@ import warnings
 
 import ticket_service_pb2 as ticket__service__pb2
 
-GRPC_GENERATED_VERSION = '1.68.1'
+GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -65,15 +65,15 @@ class TicketServiceStub(object):
                 request_serializer=ticket__service__pb2.CommitRequest.SerializeToString,
                 response_deserializer=ticket__service__pb2.CommitReply.FromString,
                 _registered_method=True)
-        self.Abort = channel.unary_unary(
-                '/TicketService/Abort',
-                request_serializer=ticket__service__pb2.AbortRequest.SerializeToString,
-                response_deserializer=ticket__service__pb2.AbortReply.FromString,
+        self.AbortVoting = channel.unary_unary(
+                '/TicketService/AbortVoting',
+                request_serializer=ticket__service__pb2.AbortVotingRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.AbortVotingReply.FromString,
                 _registered_method=True)
-        self.AbortPreCommit = channel.unary_unary(
-                '/TicketService/AbortPreCommit',
-                request_serializer=ticket__service__pb2.AbortPreCommitRequest.SerializeToString,
-                response_deserializer=ticket__service__pb2.AbortPreCommitReply.FromString,
+        self.AbortTransaction = channel.unary_unary(
+                '/TicketService/AbortTransaction',
+                request_serializer=ticket__service__pb2.AbortTransactionRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.AbortTransactionReply.FromString,
                 _registered_method=True)
 
 
@@ -117,13 +117,13 @@ class TicketServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Abort(self, request, context):
+    def AbortVoting(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def AbortPreCommit(self, request, context):
+    def AbortTransaction(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -162,15 +162,15 @@ def add_TicketServiceServicer_to_server(servicer, server):
                     request_deserializer=ticket__service__pb2.CommitRequest.FromString,
                     response_serializer=ticket__service__pb2.CommitReply.SerializeToString,
             ),
-            'Abort': grpc.unary_unary_rpc_method_handler(
-                    servicer.Abort,
-                    request_deserializer=ticket__service__pb2.AbortRequest.FromString,
-                    response_serializer=ticket__service__pb2.AbortReply.SerializeToString,
+            'AbortVoting': grpc.unary_unary_rpc_method_handler(
+                    servicer.AbortVoting,
+                    request_deserializer=ticket__service__pb2.AbortVotingRequest.FromString,
+                    response_serializer=ticket__service__pb2.AbortVotingReply.SerializeToString,
             ),
-            'AbortPreCommit': grpc.unary_unary_rpc_method_handler(
-                    servicer.AbortPreCommit,
-                    request_deserializer=ticket__service__pb2.AbortPreCommitRequest.FromString,
-                    response_serializer=ticket__service__pb2.AbortPreCommitReply.SerializeToString,
+            'AbortTransaction': grpc.unary_unary_rpc_method_handler(
+                    servicer.AbortTransaction,
+                    request_deserializer=ticket__service__pb2.AbortTransactionRequest.FromString,
+                    response_serializer=ticket__service__pb2.AbortTransactionReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -347,7 +347,7 @@ class TicketService(object):
             _registered_method=True)
 
     @staticmethod
-    def Abort(request,
+    def AbortVoting(request,
             target,
             options=(),
             channel_credentials=None,
@@ -360,9 +360,9 @@ class TicketService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/TicketService/Abort',
-            ticket__service__pb2.AbortRequest.SerializeToString,
-            ticket__service__pb2.AbortReply.FromString,
+            '/TicketService/AbortVoting',
+            ticket__service__pb2.AbortVotingRequest.SerializeToString,
+            ticket__service__pb2.AbortVotingReply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -374,7 +374,7 @@ class TicketService(object):
             _registered_method=True)
 
     @staticmethod
-    def AbortPreCommit(request,
+    def AbortTransaction(request,
             target,
             options=(),
             channel_credentials=None,
@@ -387,9 +387,9 @@ class TicketService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/TicketService/AbortPreCommit',
-            ticket__service__pb2.AbortPreCommitRequest.SerializeToString,
-            ticket__service__pb2.AbortPreCommitReply.FromString,
+            '/TicketService/AbortTransaction',
+            ticket__service__pb2.AbortTransactionRequest.SerializeToString,
+            ticket__service__pb2.AbortTransactionReply.FromString,
             options,
             channel_credentials,
             insecure,

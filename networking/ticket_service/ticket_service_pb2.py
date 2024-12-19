@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14ticket_service.proto\"\x15\n\x13TSAllFlightsRequest\"(\n\x11TSAllFlightsReply\x12\x13\n\x0b\x61ll_flights\x18\x01 \x01(\t\"_\n\x0bVoteRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\x12\x13\n\x0bneighbor_id\x18\x04 \x01(\x05\"\x19\n\tVoteReply\x12\x0c\n\x04vote\x18\x01 \x01(\x08\"L\n\rCommitRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\"\r\n\x0b\x43ommitReply\"K\n\x0c\x41\x62ortRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\"\x0c\n\nAbortReply\"2\n\x15\x46lightsByRouteRequest\x12\x0b\n\x03src\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x65st\x18\x02 \x01(\t\"&\n\x13\x46lightsByRouteReply\x12\x0f\n\x07\x66lights\x18\x01 \x01(\t\"C\n\x17\x42uyFlightPackageRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"=\n\x15\x42uyFlightPackageReply\x12\x13\n\x0b\x62uy_success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xce\x02\n\rTicketService\x12;\n\rGetAllFlights\x12\x14.TSAllFlightsRequest\x1a\x12.TSAllFlightsReply\"\x00\x12\x43\n\x11GetFlightsByRoute\x12\x16.FlightsByRouteRequest\x1a\x14.FlightsByRouteReply\"\x00\x12\x46\n\x10\x42uyFlightPackage\x12\x18.BuyFlightPackageRequest\x1a\x16.BuyFlightPackageReply\"\x00\x12\"\n\x04Vote\x12\x0c.VoteRequest\x1a\n.VoteReply\"\x00\x12(\n\x06\x43ommit\x12\x0e.CommitRequest\x1a\x0c.CommitReply\"\x00\x12%\n\x05\x41\x62ort\x12\r.AbortRequest\x1a\x0b.AbortReply\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14ticket_service.proto\"\x15\n\x13TSAllFlightsRequest\"(\n\x11TSAllFlightsReply\x12\x13\n\x0b\x61ll_flights\x18\x01 \x01(\t\"_\n\x0bVoteRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\x12\x13\n\x0bneighbor_id\x18\x04 \x01(\x05\"\x19\n\tVoteReply\x12\x0c\n\x04vote\x18\x01 \x01(\x08\"O\n\x10PreCommitRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\"\x10\n\x0ePreCommitReply\"\"\n\rCommitRequest\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\"\r\n\x0b\x43ommitReply\"Q\n\x12\x41\x62ortVotingRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\x12\x11\n\ttimestamp\x18\x03 \x01(\x05\"\x12\n\x10\x41\x62ortVotingReply\",\n\x17\x41\x62ortTransactionRequest\x12\x11\n\ttimestamp\x18\x01 \x01(\x05\"\x17\n\x15\x41\x62ortTransactionReply\"2\n\x15\x46lightsByRouteRequest\x12\x0b\n\x03src\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x65st\x18\x02 \x01(\t\"&\n\x13\x46lightsByRouteReply\x12\x0f\n\x07\x66lights\x18\x01 \x01(\t\"C\n\x17\x42uyFlightPackageRequest\x12\x12\n\nflights_id\x18\x01 \x03(\x05\x12\x14\n\x0cseats_amount\x18\x02 \x01(\x05\"=\n\x15\x42uyFlightPackageReply\x12\x13\n\x0b\x62uy_success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xdb\x03\n\rTicketService\x12;\n\rGetAllFlights\x12\x14.TSAllFlightsRequest\x1a\x12.TSAllFlightsReply\"\x00\x12\x43\n\x11GetFlightsByRoute\x12\x16.FlightsByRouteRequest\x1a\x14.FlightsByRouteReply\"\x00\x12\x46\n\x10\x42uyFlightPackage\x12\x18.BuyFlightPackageRequest\x1a\x16.BuyFlightPackageReply\"\x00\x12\"\n\x04Vote\x12\x0c.VoteRequest\x1a\n.VoteReply\"\x00\x12\x31\n\tPreCommit\x12\x11.PreCommitRequest\x1a\x0f.PreCommitReply\"\x00\x12(\n\x06\x43ommit\x12\x0e.CommitRequest\x1a\x0c.CommitReply\"\x00\x12\x37\n\x0b\x41\x62ortVoting\x12\x13.AbortVotingRequest\x1a\x11.AbortVotingReply\"\x00\x12\x46\n\x10\x41\x62ortTransaction\x12\x18.AbortTransactionRequest\x1a\x16.AbortTransactionReply\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -39,22 +39,30 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_VOTEREQUEST']._serialized_end=184
   _globals['_VOTEREPLY']._serialized_start=186
   _globals['_VOTEREPLY']._serialized_end=211
-  _globals['_COMMITREQUEST']._serialized_start=213
-  _globals['_COMMITREQUEST']._serialized_end=289
-  _globals['_COMMITREPLY']._serialized_start=291
-  _globals['_COMMITREPLY']._serialized_end=304
-  _globals['_ABORTREQUEST']._serialized_start=306
-  _globals['_ABORTREQUEST']._serialized_end=381
-  _globals['_ABORTREPLY']._serialized_start=383
-  _globals['_ABORTREPLY']._serialized_end=395
-  _globals['_FLIGHTSBYROUTEREQUEST']._serialized_start=397
-  _globals['_FLIGHTSBYROUTEREQUEST']._serialized_end=447
-  _globals['_FLIGHTSBYROUTEREPLY']._serialized_start=449
-  _globals['_FLIGHTSBYROUTEREPLY']._serialized_end=487
-  _globals['_BUYFLIGHTPACKAGEREQUEST']._serialized_start=489
-  _globals['_BUYFLIGHTPACKAGEREQUEST']._serialized_end=556
-  _globals['_BUYFLIGHTPACKAGEREPLY']._serialized_start=558
-  _globals['_BUYFLIGHTPACKAGEREPLY']._serialized_end=619
-  _globals['_TICKETSERVICE']._serialized_start=622
-  _globals['_TICKETSERVICE']._serialized_end=956
+  _globals['_PRECOMMITREQUEST']._serialized_start=213
+  _globals['_PRECOMMITREQUEST']._serialized_end=292
+  _globals['_PRECOMMITREPLY']._serialized_start=294
+  _globals['_PRECOMMITREPLY']._serialized_end=310
+  _globals['_COMMITREQUEST']._serialized_start=312
+  _globals['_COMMITREQUEST']._serialized_end=346
+  _globals['_COMMITREPLY']._serialized_start=348
+  _globals['_COMMITREPLY']._serialized_end=361
+  _globals['_ABORTVOTINGREQUEST']._serialized_start=363
+  _globals['_ABORTVOTINGREQUEST']._serialized_end=444
+  _globals['_ABORTVOTINGREPLY']._serialized_start=446
+  _globals['_ABORTVOTINGREPLY']._serialized_end=464
+  _globals['_ABORTTRANSACTIONREQUEST']._serialized_start=466
+  _globals['_ABORTTRANSACTIONREQUEST']._serialized_end=510
+  _globals['_ABORTTRANSACTIONREPLY']._serialized_start=512
+  _globals['_ABORTTRANSACTIONREPLY']._serialized_end=535
+  _globals['_FLIGHTSBYROUTEREQUEST']._serialized_start=537
+  _globals['_FLIGHTSBYROUTEREQUEST']._serialized_end=587
+  _globals['_FLIGHTSBYROUTEREPLY']._serialized_start=589
+  _globals['_FLIGHTSBYROUTEREPLY']._serialized_end=627
+  _globals['_BUYFLIGHTPACKAGEREQUEST']._serialized_start=629
+  _globals['_BUYFLIGHTPACKAGEREQUEST']._serialized_end=696
+  _globals['_BUYFLIGHTPACKAGEREPLY']._serialized_start=698
+  _globals['_BUYFLIGHTPACKAGEREPLY']._serialized_end=759
+  _globals['_TICKETSERVICE']._serialized_start=762
+  _globals['_TICKETSERVICE']._serialized_end=1237
 # @@protoc_insertion_point(module_scope)

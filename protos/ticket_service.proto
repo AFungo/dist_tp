@@ -8,8 +8,8 @@ service TicketService {
   rpc Vote (VoteRequest) returns (VoteReply) {}
   rpc PreCommit (PreCommitRequest) returns (PreCommitReply) {}
   rpc Commit (CommitRequest) returns (CommitReply) {}
-  rpc Abort (AbortRequest) returns (AbortReply) {}
-  rpc AbortPreCommit (AbortPreCommitRequest) returns (AbortPreCommitReply) {}
+  rpc AbortVoting (AbortVotingRequest) returns (AbortVotingReply) {}
+  rpc AbortTransaction (AbortTransactionRequest) returns (AbortTransactionReply) {}
 }
 
 message TSAllFlightsRequest{
@@ -46,19 +46,20 @@ message CommitRequest{
 message CommitReply{
 }
 
-message AbortRequest{
+message AbortVotingRequest{
   repeated int32 flights_id = 1;
   int32 seats_amount = 2;
   int32 timestamp = 3;
 }
 
-message AbortReply{
+message AbortVotingReply{
 }
 
-message AbortPreCommitRequest{
+message AbortTransactionRequest{
+  int32 timestamp = 1;
 }
 
-message AbortPreCommitReply{
+message AbortTransactionReply{
 }
 
 message FlightsByRouteRequest{

@@ -23,12 +23,12 @@ async def main():
     async with grpc.aio.insecure_channel(address) as channel:
         stub = networking.ticket_service.ticket_service_pb2_grpc.TicketServiceStub(channel)
            
-        # for i in range(0, 3):
-        #     await buy_flight(stub, [12, 0, 28], 1)
-            #num = random.randrange(0, 29, 3)
+        for i in range(0, 2):
+            await buy_flight(stub, [11], 1)
+        #     #num = random.randrange(0, 29, 3)
         
         # await get_flights_by_src_and_dest(stub, "SAO", "MAD")
-        await get_all_flights(stub)
+        # await get_all_flights(stub)
         
 
 async def get_flights_by_src_and_dest(stub, src, dest):
