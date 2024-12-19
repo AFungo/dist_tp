@@ -53,9 +53,9 @@ class TicketServiceServicer(TicketServiceServicer):
 
         reserve_results = await self._process_reservations(flights_id, seats_amount, self._reserve)
 
-        if not all(request.is_temp_reserved for request in reserve_results):
+        if not all(False if not reserve else reserve.is_temp_reserved for reserve in reserve_results):
             flights_to_cancel = [
-                request.flight_id for request in reserve_results if request.is_temp_reserved
+                request.flight_id for request in reserve_results if request != False and request.is_temp_reserved 
             ]
             await self._cancel_reserve(flights_to_cancel, seats_amount)
             return await self._abort_transaction(log, "ERROR: can't reserve all the flights")
@@ -64,6 +64,25 @@ class TicketServiceServicer(TicketServiceServicer):
         return BuyFlightPackageReply(buy_success=True)
 
     async def Vote(self, request, context):
+        await self._fetch_all_flights()
+        try:
+            seats_available = await self._get_seats_available(request.flights_id)
+        except Exception as e:
+            print(e)
+            return VoteReply(vote=False)
+            
+        if self._can_reserve(request.neighbor_id, request.flights_id, request.seats_amount, seats_available, request.timestamp):
+            self.clock.update(request.timestamp)
+            
+            for flight_id in request.flights_id:
+                self.vote_data.append((flight_id, request.seats_amount))
+            
+            return VoteReply(vote=True)     #vote-commit
+        
+        else:
+            return VoteReply(vote=False)    #vote-abort
+    
+    """ async def Vote(self, request, context):
         await self._fetch_all_flights()
         seats_available = await self._get_seats_available(request.flights_id)
         
@@ -76,8 +95,8 @@ class TicketServiceServicer(TicketServiceServicer):
             return VoteReply(vote=True)     #vote-commit
         
         else:
-            return VoteReply(vote=False)    #vote-abort
-
+            return VoteReply(vote=False)    #vote-abort """
+        
     async def Commit(self, request, context):
         self.clock.update(request.timestamp)
         
@@ -116,9 +135,6 @@ class TicketServiceServicer(TicketServiceServicer):
             return response
         except Exception as e:
             print(f"Absent Neighbor {neighbor} in {operation_name}.")
-            if operation_name == "votation":
-                return True
-            pass
 
     async def _try_to_commit(self, neighbor, flights_id, seats_amount):
         request = CommitRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
@@ -159,7 +175,8 @@ class TicketServiceServicer(TicketServiceServicer):
             for neighbor in self.neighbor_clients
         ]
         responses = await asyncio.gather(*tasks, return_exceptions=True)
-        return responses
+        return [response.vote for response in responses if response is not None]
+            
     
     async def _fetch_all_flights(self):
         flights = []
@@ -176,6 +193,7 @@ class TicketServiceServicer(TicketServiceServicer):
                 flights.append(flight)
 
         except Exception as e:
+            print(e)
             print(f"Airline not found. {airline}")
 
     async def _process_reservations(self, flight_ids, seats_amount, reservation_func):
@@ -183,11 +201,15 @@ class TicketServiceServicer(TicketServiceServicer):
         return await asyncio.gather(*tasks)
 
     async def _reserve(self, flight_id, seats_amount):
-        airline_stub = self.airline_flights[flight_id]
-        response = await airline_stub.Reserve(
-            airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
-        )
-        return response
+        try:    
+            airline_stub = self.airline_flights[flight_id]
+            response = await airline_stub.Reserve(
+                airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
+            )
+            return response
+        except Exception as e:
+            print(e)
+            return False
 
     async def _confirm_reserve(self, flight_id, seats_amount):
         airline_stub = self.airline_flights[flight_id]
@@ -228,7 +250,9 @@ class TicketServiceServicer(TicketServiceServicer):
     async def _get_seats_available(self, flights_id):
         seats_available = {}
         for f in flights_id:
-            stub = self.airline_flights[f]
+            stub = self.airline_flights.get(f)
+            if not stub:
+                raise Exception("Airline not found.")
             response = await stub.GetSeatsAvailable(airline_service_pb2.SeatsAvailableRequest(flight_id=f))
             seats_available.update({f:response.seats_available})
             

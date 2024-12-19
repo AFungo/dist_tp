@@ -27,6 +27,7 @@ async def main():
         #     await buy_flight(stub, [12, 0, 28], 1)
             #num = random.randrange(0, 29, 3)
         
+        await buy_flight(stub, [0], 1)
         # await get_flights_by_src_and_dest(stub, "SAO", "MAD")
         await get_all_flights(stub)
         
