@@ -72,6 +72,16 @@ class Airline:
         :param seats_amount: The amount of seats to cancel.
         """
         flight = self.get_flight(flight_id)
+        return flight.free_temporary_seats(seats_amount)
+
+    def cancel_purchase(self, flight_id, seats_amount):
+        """
+        Cancel a purchase for a seat.
+
+        :param flight_id: The ID of the flight.
+        :param seats_amount: The amount of seats to cancel.
+        """
+        flight = self.get_flight(flight_id)
         return flight.free_seats(seats_amount)
 
     def get_seats_available(self, flight_id):

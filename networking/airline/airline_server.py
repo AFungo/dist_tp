@@ -2,7 +2,7 @@ import json
 import logging
 import grpc
 
-from networking.airline.airline_service_pb2 import AllFlightsReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, SeatsAvailableReply
+from networking.airline.airline_service_pb2 import AllFlightsReply, CancelPurchaseReply, ReserveReply, ConfirmReserveReply, CancelReserveReply, SeatsAvailableReply
 from networking.airline.airline_service_pb2_grpc import AirlineServiceServicer, add_AirlineServiceServicer_to_server
 
 class AirlineService(AirlineServiceServicer):
@@ -40,6 +40,10 @@ class AirlineService(AirlineServiceServicer):
     async def CancelReserve(self, request, context):
         self.airline.cancel_reserve(request.flight_id, request.seats_amount)
         return CancelReserveReply()
+
+    async def CancelPurchase(self, request, context):
+        self.airline.cancel_purchase(request.flight_id, request.seats_amount)
+        return CancelPurchaseReply()
     
     
 class AirlineServer:

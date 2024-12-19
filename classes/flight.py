@@ -38,11 +38,15 @@ class Flight:
             return True 
         return False
         
-    def free_seats(self, seats_amount: int) -> None:
+    def free_temporary_seats(self, seats_amount: int) -> None:
         if (self.temporary_reserved_seats - seats_amount) >= 0:
             self.temporary_reserved_seats -= seats_amount
             return True
         return False
+    
+    def free_seats(self, seats_amount: int) -> None:
+        self.seats_available += seats_amount
+        return True
     
     def to_dict(self):
         return {

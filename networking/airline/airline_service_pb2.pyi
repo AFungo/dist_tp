@@ -69,3 +69,15 @@ class CancelReserveRequest(_message.Message):
 class CancelReserveReply(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class CancelPurchaseRequest(_message.Message):
+    __slots__ = ("flight_id", "seats_amount")
+    FLIGHT_ID_FIELD_NUMBER: _ClassVar[int]
+    SEATS_AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    flight_id: int
+    seats_amount: int
+    def __init__(self, flight_id: _Optional[int] = ..., seats_amount: _Optional[int] = ...) -> None: ...
+
+class CancelPurchaseReply(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

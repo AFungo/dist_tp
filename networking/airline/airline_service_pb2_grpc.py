@@ -5,7 +5,7 @@ import warnings
 
 import airline_service_pb2 as airline__service__pb2
 
-GRPC_GENERATED_VERSION = '1.68.1'
+GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -60,6 +60,11 @@ class AirlineServiceStub(object):
                 request_serializer=airline__service__pb2.CancelReserveRequest.SerializeToString,
                 response_deserializer=airline__service__pb2.CancelReserveReply.FromString,
                 _registered_method=True)
+        self.CancelPurchase = channel.unary_unary(
+                '/AirlineService/CancelPurchase',
+                request_serializer=airline__service__pb2.CancelReserveRequest.SerializeToString,
+                response_deserializer=airline__service__pb2.CancelReserveReply.FromString,
+                _registered_method=True)
 
 
 class AirlineServiceServicer(object):
@@ -96,6 +101,12 @@ class AirlineServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def CancelPurchase(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AirlineServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -121,6 +132,11 @@ def add_AirlineServiceServicer_to_server(servicer, server):
             ),
             'CancelReserve': grpc.unary_unary_rpc_method_handler(
                     servicer.CancelReserve,
+                    request_deserializer=airline__service__pb2.CancelReserveRequest.FromString,
+                    response_serializer=airline__service__pb2.CancelReserveReply.SerializeToString,
+            ),
+            'CancelPurchase': grpc.unary_unary_rpc_method_handler(
+                    servicer.CancelPurchase,
                     request_deserializer=airline__service__pb2.CancelReserveRequest.FromString,
                     response_serializer=airline__service__pb2.CancelReserveReply.SerializeToString,
             ),
@@ -259,6 +275,33 @@ class AirlineService(object):
             request,
             target,
             '/AirlineService/CancelReserve',
+            airline__service__pb2.CancelReserveRequest.SerializeToString,
+            airline__service__pb2.CancelReserveReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CancelPurchase(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/AirlineService/CancelPurchase',
             airline__service__pb2.CancelReserveRequest.SerializeToString,
             airline__service__pb2.CancelReserveReply.FromString,
             options,
