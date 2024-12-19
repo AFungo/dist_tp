@@ -6,7 +6,7 @@ import grpc
 from classes.ticket_service import TicketService
 from networking.airline import airline_service_pb2
 from networking.airline.airline_service_pb2_grpc import AirlineServiceStub
-from networking.ticket_service.ticket_service_pb2 import AbortReply, AbortRequest, BuyFlightPackageReply, CommitReply, CommitRequest, FlightsByRouteReply, VoteReply, VoteRequest
+from networking.ticket_service.ticket_service_pb2 import AbortReply, AbortRequest, BuyFlightPackageReply, CommitReply, CommitRequest, FlightsByRouteReply, VoteReply, VoteRequest, TSAllFlightsReply
 from networking.ticket_service.ticket_service_pb2_grpc import TicketServiceServicer, TicketServiceStub, add_TicketServiceServicer_to_server
 from networking.utils.lamport_clock import LamportClock
 from networking.utils.node_log import NodeLog
@@ -28,6 +28,10 @@ class TicketServiceServicer(TicketServiceServicer):
     
     def add_neighbor_clients(self, neighbor_clients):
         self.neighbor_clients = neighbor_clients
+        
+    async def GetAllFlights(self, request, context):
+        flights = await self._fetch_all_flights()
+        return TSAllFlightsReply(all_flights=json.dumps(flights))
 
     async def GetFlightsByRoute(self, request, context):
         flights = await self._fetch_all_flights()
@@ -57,7 +61,7 @@ class TicketServiceServicer(TicketServiceServicer):
             return await self._abort_transaction(log, "ERROR: can't reserve all the flights")
         
         await self._commit_transaction(log, flights_id, seats_amount)
-        return BuyFlightPackageReply()
+        return BuyFlightPackageReply(buy_success=True)
 
     async def Vote(self, request, context):
         await self._fetch_all_flights()
@@ -103,33 +107,31 @@ class TicketServiceServicer(TicketServiceServicer):
         await asyncio.gather(*tasks)
         log.set_status_committed()
         
+    async def _try_operation(self, operation, neighbor, request, operation_name):
+        try:
+            response = await asyncio.wait_for(
+                operation(request),
+                timeout=5
+            )
+            return response
+        except Exception as e:
+            print(f"Absent Neighbor {neighbor} in {operation_name}.")
+            if operation_name == "votation":
+                return True
+            pass
+
     async def _try_to_commit(self, neighbor, flights_id, seats_amount):
-        try:
-            response = await asyncio.wait_for(
-                neighbor.Commit(
-                    CommitRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
-                ),
-                timeout=5
-            )
-            return response 
-        except:
-            print(f"Absent Neighbor {neighbor} in commit.")
-            pass
-    
-    
+        request = CommitRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
+        return await self._try_operation(neighbor.Commit, neighbor, request, "commit")
+
     async def _try_to_abort(self, neighbor, flights_id, seats_amount):
-        try:
-            response = await asyncio.wait_for(
-                neighbor.Abort(
-                    AbortRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
-                ),
-                timeout=5
-            )
-            return response 
-        except:
-            print(f"Absent Neighbor {neighbor} in abort.")
-            pass
-             
+        request = AbortRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
+        return await self._try_operation(neighbor.Abort, neighbor, request, "abort")
+
+    async def _try_to_vote(self, neighbor, flights_id, seats_amount):
+        request = VoteRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
+        return await self._try_operation(neighbor.Vote, neighbor, request, "votation")
+    
     async def _abort_transaction(self, log, message):
         self.logs.remove(log)
         self.clock.increment()
@@ -159,21 +161,6 @@ class TicketServiceServicer(TicketServiceServicer):
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         return responses
     
-    async def _try_to_vote(self, neighbor, flights_id, seats_amount):
-        try:
-            response = await asyncio.wait_for(
-                neighbor.Vote(
-                    VoteRequest(flights_id=flights_id, seats_amount=seats_amount, timestamp=self.clock.get_time())
-                ),
-                timeout=5
-            )
-            return response.vote
-        except Exception as e:
-            print(e)
-            print(f"Absent Neighbor {neighbor} in votation.")
-            return True
-    
-    
     async def _fetch_all_flights(self):
         flights = []
         tasks = [self._get_airline_flights(airline, flights) for airline in self.airline_clients]
@@ -190,7 +177,6 @@ class TicketServiceServicer(TicketServiceServicer):
 
         except Exception as e:
             print(f"Airline not found. {airline}")
-            
 
     async def _process_reservations(self, flight_ids, seats_amount, reservation_func):
         tasks = [reservation_func(flight_id, seats_amount) for flight_id in flight_ids]
@@ -209,12 +195,15 @@ class TicketServiceServicer(TicketServiceServicer):
             airline_service_pb2.ReserveRequest(flight_id=flight_id, seats_amount=seats_amount)
         )
         return response
-            
+    
+    def _intersection(self, ls1, ls2):
+        return list(set(ls1).intersection(ls2))
+    
     def _can_reserve(self, neighbor_id, flights_id, seats_amount, seats_available, timestamp):
         pending_logs = [
-            log for log in self.logs if log.is_pending() and log.flight_id in flights_id 
+            log for log in self.logs if log.is_pending() and self._intersection(log.flights_id, flights_id) is not []
         ]
-        
+ 
         for log in pending_logs:
             if log.timestamp < timestamp:
                 return False
@@ -244,6 +233,7 @@ class TicketServiceServicer(TicketServiceServicer):
             seats_available.update({f:response.seats_available})
             
         return seats_available
+    
 
 class TicketServiceServer:
 
