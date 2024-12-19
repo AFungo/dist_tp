@@ -5,7 +5,7 @@ import warnings
 
 import ticket_service_pb2 as ticket__service__pb2
 
-GRPC_GENERATED_VERSION = '1.68.0'
+GRPC_GENERATED_VERSION = '1.68.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -35,6 +35,11 @@ class TicketServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.GetAllFlights = channel.unary_unary(
+                '/TicketService/GetAllFlights',
+                request_serializer=ticket__service__pb2.TSAllFlightsRequest.SerializeToString,
+                response_deserializer=ticket__service__pb2.TSAllFlightsReply.FromString,
+                _registered_method=True)
         self.GetFlightsByRoute = channel.unary_unary(
                 '/TicketService/GetFlightsByRoute',
                 request_serializer=ticket__service__pb2.FlightsByRouteRequest.SerializeToString,
@@ -75,6 +80,12 @@ class TicketServiceStub(object):
 class TicketServiceServicer(object):
     """The greeting service definition.
     """
+
+    def GetAllFlights(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def GetFlightsByRoute(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -121,6 +132,11 @@ class TicketServiceServicer(object):
 
 def add_TicketServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'GetAllFlights': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAllFlights,
+                    request_deserializer=ticket__service__pb2.TSAllFlightsRequest.FromString,
+                    response_serializer=ticket__service__pb2.TSAllFlightsReply.SerializeToString,
+            ),
             'GetFlightsByRoute': grpc.unary_unary_rpc_method_handler(
                     servicer.GetFlightsByRoute,
                     request_deserializer=ticket__service__pb2.FlightsByRouteRequest.FromString,
@@ -167,6 +183,33 @@ def add_TicketServiceServicer_to_server(servicer, server):
 class TicketService(object):
     """The greeting service definition.
     """
+
+    @staticmethod
+    def GetAllFlights(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/TicketService/GetAllFlights',
+            ticket__service__pb2.TSAllFlightsRequest.SerializeToString,
+            ticket__service__pb2.TSAllFlightsReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
 
     @staticmethod
     def GetFlightsByRoute(request,

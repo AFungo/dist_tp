@@ -1,0 +1,54 @@
+{
+    "name": "Flybondi",
+    "flights": [
+        {
+            "src": "RCU",
+            "dest": "AEP",  
+            "seats_available": 10,
+            "id": 10
+        },
+        {
+            "src": "AEP",
+            "dest": "RCU",
+            "seats_available": 10,
+            "id": 11
+        },
+        {
+            "src": "COR",
+            "dest": "RCU",
+            "seats_available": 5,
+            "id": 12
+        },
+        {
+            "src": "RCU",
+            "dest": "COR",
+            "seats_available": 5,
+            "id": 13
+        },
+        {
+            "src": "GDZ",
+            "dest": "SAO",
+            "seats_available": 15,
+            "id": 14
+        },
+        {
+            "src": "SAO",
+            "dest": "GDZ",
+            "seats_available": 15,
+            "id": 15
+        },
+        {
+            "src": "EZE",
+            "dest": "GDZ",
+            "seats_available": 15,
+            "id": 16
+        },
+        {
+            "src": "GDZ",
+            "dest": "EZE",
+            "seats_available": 5,
+            "id": 17
+        }
+    ],
+    "port": "5004"
+}

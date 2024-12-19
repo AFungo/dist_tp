@@ -2,6 +2,7 @@ syntax = "proto3";
 
 // The greeting service definition.
 service TicketService {
+  rpc GetAllFlights (TSAllFlightsRequest) returns (TSAllFlightsReply){}
   rpc GetFlightsByRoute (FlightsByRouteRequest) returns (FlightsByRouteReply){}
   rpc BuyFlightPackage (BuyFlightPackageRequest) returns (BuyFlightPackageReply){}
   rpc Vote (VoteRequest) returns (VoteReply) {}
@@ -9,6 +10,13 @@ service TicketService {
   rpc Commit (CommitRequest) returns (CommitReply) {}
   rpc Abort (AbortRequest) returns (AbortReply) {}
   rpc AbortPreCommit (AbortPreCommitRequest) returns (AbortPreCommitReply) {}
+}
+
+message TSAllFlightsRequest{
+}
+
+message TSAllFlightsReply{
+  string all_flights = 1;
 }
 
 message VoteRequest {

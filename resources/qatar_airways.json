@@ -1,0 +1,30 @@
+{
+    "name": "Qatar airways",
+    "flights": [
+        {
+            "src": "DXB",
+            "dest": "MAD",  
+            "seats_available": 15,
+            "id": 6
+        },
+        {
+            "src": "MAD",
+            "dest": "DXB",  
+            "seats_available": 15,
+            "id": 7
+        },
+        {
+            "src": "DXB",
+            "dest": "EZE",
+            "seats_available": 15,
+            "id": 8
+        },
+        {
+            "src": "EZE",
+            "dest": "DXB",
+            "seats_available": 15,
+            "id": 9
+        }
+    ],
+    "port": "5002"
+}

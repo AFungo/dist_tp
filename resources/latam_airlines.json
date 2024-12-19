@@ -2,22 +2,40 @@
     "name": "LATAM Airlines",
     "flights": [
         {
+            "src": "SCL",
+            "dest": "COR",  
+            "seats_available": 15,
+            "id": 18
+        },
+        {
+            "src": "COR",
+            "dest": "SCL",  
+            "seats_available": 15,
+            "id": 19
+        },
+        {
+            "src": "SCL",
+            "dest": "RCU",
+            "seats_available": 15,
+            "id": 20
+        },
+        {
             "src": "RCU",
-            "dest": "GDZ",  
-            "seats_available": 2,
-            "id": 3
+            "dest": "SCL",
+            "seats_available": 15,
+            "id": 21
         },
         {
-            "src": "EZE",
-            "dest": "GDZ",
-            "seats_available": 2,
-            "id": 4
+            "src": "SAO",
+            "dest": "MAD",
+            "seats_available": 15,
+            "id": 22
         },
         {
-            "src": "GDZ",
-            "dest": "AEP",
-            "seats_available": 2,
-            "id": 5
+            "src": "MAD",
+            "dest": "SAO",
+            "seats_available": 15,
+            "id": 23
         }
     ],
     "port": "5001"

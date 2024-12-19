@@ -5,6 +5,16 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Optional as _Op
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class TSAllFlightsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class TSAllFlightsReply(_message.Message):
+    __slots__ = ("all_flights",)
+    ALL_FLIGHTS_FIELD_NUMBER: _ClassVar[int]
+    all_flights: str
+    def __init__(self, all_flights: _Optional[str] = ...) -> None: ...
+
 class VoteRequest(_message.Message):
     __slots__ = ("flights_id", "seats_amount", "timestamp", "neighbor_id")
     FLIGHTS_ID_FIELD_NUMBER: _ClassVar[int]
